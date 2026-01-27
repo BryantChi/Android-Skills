@@ -28,6 +28,7 @@
    - [OpenInterpreter](#q-openinterpreter)
    - [Fabric](#r-fabric)
    - [Ollama + Open WebUI](#s-ollama--open-webui)
+   - [Opencode CLI](#t-opencode-cli)
 4. [場景導向完整範例](#場景導向完整範例)
 5. [進階整合技巧](#進階整合技巧)
 6. [常見問題](#常見問題)
@@ -1216,6 +1217,70 @@ docker run -d -p 3000:8080 \
 
 ---
 
+### T. Opencode CLI
+
+**契合度：⭐⭐⭐⭐⭐ (完美 - 強大的 Agentic CLI)**
+
+Opencode CLI 是一款 2026 年新興的 AI Coding Agent，以其強大的 TUI 介面和對本地模型 (Ollama) 的原生支援著稱。
+
+#### 安裝
+
+```bash
+# MacOS / Linux
+curl -fsSL https://opencode.ai/install | bash
+
+# npm (跨平台)
+npm install -g opencode
+```
+
+#### 基本操作
+
+```bash
+# 啟動並初始化專案 (建立 AGENTS.md)
+opencode
+> /init
+```
+
+#### 全域技能安裝
+
+已將 Android Skills 安裝至 Opencode CLI 全域目錄：
+`~\AppData\Roaming\opencode\agents\android_skills\`
+
+引用方式：
+
+```bash
+# 引用技能 (Opencode 支援自動識別 global agent skills)
+> @project_bootstrapping 請建立新專案
+
+# 或使用絕對路徑引用
+> 請參考 @~/AppData/Roaming/opencode/agents/android_skills/coding_style_conventions/SKILL.md
+> 檢查這個專案的命名規範
+
+# 組合多個技能
+> 請參考 @~/AppData/Roaming/opencode/agents/android_skills/legacy_rapid_expansion/SKILL.md
+> 與 @~/AppData/Roaming/opencode/agents/android_skills/tech_stack_migration/SKILL.md
+> 幫我規劃 PaymentManager 的重構
+```
+
+#### Plan Mode (規劃模式)
+
+Opencode 的強項在於先規劃再執行：
+
+1. 按 `Tab` 切換到 **Plan Mode**
+2. 輸入指令：
+```
+請根據 @project_bootstrapping 的架構，
+規劃一個 MVVM + Clean Architecture 的模組結構
+```
+3. 確認計畫後，切換回 **Build Mode** 讓 AI 執行
+
+#### 最佳實踐
+
+1. **利用 AGENTS.md**：可以在 `.opencode/agents` 或 `AGENTS.md` 中定義專屬 Agent，預載入常用 Skills。
+2. **本地模型整合**：配合 @devops_and_security 中的隱私規範，可完全使用 Ollama 運行以免感資料外洩。
+
+---
+
 ## 場景導向完整範例
 
 ### 場景 A：從零建立新專案 (完整流程)
@@ -1405,7 +1470,7 @@ Set-Alias -Name android-review -Value Invoke-AndroidReview
 - **Claude 使用者**: Claude Code CLI (使用 /skill_name)
 - **OpenAI 使用者**: Codex CLI (使用 $skill_name)
 - **最佳體驗**: Cursor / Windsurf
-- **CLI 愛好者**: Aider
+- **CLI 愛好者**: Aider / Opencode CLI
 - **完全本地**: Ollama + Open WebUI
 - **團隊共享**: Claude Projects
 
@@ -1434,6 +1499,7 @@ Set-Alias -Name android-review -Value Invoke-AndroidReview
 │                        🔧 其他 CLI 工具                                │
 ├───────────────────────────────────────────────────────────────────────┤
 │ AIDER          │ /read ~/.claude/skills/xxx/SKILL.md                 │
+│ OPENCODE CLI   │ @skill_name (TUI)                                   │
 │ LLM CLI        │ cat SKILL.md | llm "指令"                           │
 │ FABRIC         │ cat code.kt | fabric --pattern android_review       │
 ├───────────────────────────────────────────────────────────────────────┤
@@ -1452,6 +1518,7 @@ Set-Alias -Name android-review -Value Invoke-AndroidReview
 ┌─────────────────────────────────────────────────────────────┐
 │                    2026 CLI Skills 標準位置                  │
 ├─────────────────────────────────────────────────────────────┤
+│ Opencode CLI │ ~/AppData/Roaming/opencode/agents/          │
 │ Claude Code  │ ~/.claude/skills/<skill-name>/SKILL.md      │
 │ Codex CLI    │ ~/.codex/skills/<skill-name>/SKILL.md       │
 │ Gemini CLI   │ ~/.gemini/skills/<skill-name>/SKILL.md      │
