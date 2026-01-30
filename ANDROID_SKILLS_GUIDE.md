@@ -1,6 +1,6 @@
 # Android Skills 完整使用教學
 
-這份指南詳細說明如何在各種 AI 工具中使用這 14 個 Android 技能。
+這份指南詳細說明如何在各種 AI 工具中使用這 16 個 Android 技能。
 
 ---
 
@@ -28,7 +28,7 @@
    - [OpenInterpreter](#q-openinterpreter)
    - [Fabric](#r-fabric)
    - [Ollama + Open WebUI](#s-ollama--open-webui)
-   - [Opencode CLI](#t-opencode-cli)
+   - [OpenCode CLI (opencode.ai)](#t-opencode-cli-opencodeai)
 4. [場景導向完整範例](#場景導向完整範例)
 5. [進階整合技巧](#進階整合技巧)
 6. [常見問題](#常見問題)
@@ -53,6 +53,8 @@
 | 12 | `devops_and_security` | CI/CD、安全加固 | `devops_and_security/SKILL.md` |
 | 13 | `crash_monitoring` | Crashlytics、ANR 分析 | `crash_monitoring/SKILL.md` |
 | 14 | `kotlin_multiplatform` | KMP 跨平台架構 | `kotlin_multiplatform/SKILL.md` |
+| 15 | `observability_first` | 可觀測性優先與指標閉環 | `observability_first/SKILL.md` |
+| 16 | `supply_chain_security` | 依賴治理與供應鏈安全 | `supply_chain_security/SKILL.md` |
 
 ---
 
@@ -61,7 +63,7 @@
 ### 原則 1：Context 管理 (不浪費 Token)
 
 ```
-❌ 錯誤做法：把 14 個檔案全部丟給 AI
+❌ 錯誤做法：把 16 個檔案全部丟給 AI
    → Token 浪費、AI 注意力分散、回應品質下降
 
 ✅ 正確做法：根據任務只載入 2-3 個相關技能
@@ -80,6 +82,12 @@
 | D | 效能問題排查 | `deep_performance_tuning` + `crash_monitoring` |
 | E | App 發布準備 | `devops_and_security` + `deep_performance_tuning` |
 | F | 跨平台共享邏輯 | `kotlin_multiplatform` + `data_layer_mastery` |
+| G | AI-assisted CI / Quality Gates | `coding_style_conventions` + `devops_and_security` |
+| H | Performance-by-default | `deep_performance_tuning` + `project_bootstrapping` |
+| I | Observability-first | `observability_first` + `crash_monitoring` |
+| J | Supply Chain Security | `supply_chain_security` + `devops_and_security` |
+| K | Compose-first + Interop | `tech_stack_migration` + `ui_ux_engineering` |
+| L | 多模組治理 | `project_bootstrapping` + `dependency_injection_mastery` |
 
 ### 原則 3：明確引用章節
 
@@ -107,9 +115,9 @@
 
 ### A. Antigravity (Gemini CLI / VS Code)
 
-**契合度：⭐⭐⭐⭐⭐ (完美 - 您正在使用的工具)**
+**契合度：⭐⭐⭐⭐⭐ (高)**
 
-Antigravity 是 Google DeepMind 開發的 Agentic AI 編程助手，支援 CLI 和 VS Code 兩種模式。這些技能就是專為 Antigravity 設計的。
+**注意**：Antigravity 官方來源尚未確認，以下為目前可用資訊整理；若有官方連結請提供以便更新。
 
 #### 安裝方式
 
@@ -128,7 +136,7 @@ npm install -g @anthropic-ai/antigravity
 ├── skill_index/SKILL.md
 ├── coding_style_conventions/SKILL.md
 ├── project_bootstrapping/SKILL.md
-└── ... (共 14 個)
+└── ... (共 16 個)
 ```
 
 #### 使用方式 1：自動識別
@@ -223,7 +231,15 @@ description: Android Code Review 流程
 
 **契合度：⭐⭐⭐⭐⭐ (完美)**
 
+官方文件：
+- https://geminicli.com/docs/
+- https://github.com/google-gemini/gemini-cli
+
 Cursor 是目前最適合使用這些技能的工具之一。
+
+官方下載與文件：
+- 下載：https://cursor.com/downloads
+- 文件：https://cursor.com/docs
 
 #### 環境設定
 
@@ -299,6 +315,12 @@ globs: ["**/*.kt", "**/*.kts"]
 
 Windsurf 的 Cascade 功能非常適合多步驟任務。
 
+官方下載與文件：
+- 下載：https://windsurf.com/download/editor
+- 入門：https://docs.windsurf.com/windsurf/getting-started.md
+
+補充：若使用外掛版，官方註記維護模式，優先使用 Windsurf Editor 或官方 JetBrains 外掛。
+
 #### 基本使用
 
 ```
@@ -345,6 +367,12 @@ Windsurf 的 Cascade 功能非常適合多步驟任務。
 
 VS Code Extension，支援多種 AI Provider。
 
+官方文件與安裝：
+- 文件：https://docs.roocode.com
+- 安裝：https://docs.roocode.com/getting-started/installing
+
+VS Code 擴充套件 ID：`RooVeterinaryInc.roo-cline`（官方名稱為 Roo Code）
+
 #### 安裝
 
 1. VS Code Extensions 搜尋 "Roo Code"
@@ -378,6 +406,14 @@ VS Code Extension，支援多種 AI Provider。
 **契合度：⭐⭐⭐⭐⭐ (完美)**
 
 VS Code Extension，支援自主執行任務。
+
+支援：VS Code、Cursor、JetBrains、VSCodium、Windsurf
+
+官方文件與安裝：
+- 文件：https://docs.cline.bot
+- 安裝：https://docs.cline.bot/getting-started/installing-cline
+
+安裝後需登入：https://app.cline.bot
 
 #### 安裝
 
@@ -416,13 +452,18 @@ Always run Quick Checklist before completing a task.
 
 Terminal 愛好者的首選，功能強大。
 
+官方文件：
+- 安裝：https://aider.chat/docs/install.html
+- 使用：https://aider.chat/docs/usage.html
+
 #### 安裝
 
 ```bash
-# 使用 pip
-pip install aider-chat
+# 官方推薦（aider-install）
+python -m pip install aider-install
+aider-install
 
-# 或使用 pipx (推薦)
+# 或使用 pipx
 pipx install aider-chat
 ```
 
@@ -588,8 +629,15 @@ Anthropic 官方的 Agentic CLI 工具，支援 Skills 系統。
 #### 安裝
 
 ```bash
-npm install -g @anthropic-ai/claude-code
+# 官方安裝指南
+# https://code.claude.com/docs/en/setup
+
+# 依官方安裝指南進行安裝
 ```
+
+註：Homebrew 套件名為 `fabric-ai`，如需 `fabric` 指令可自行設 alias。
+
+註：官方文件標示 npm 安裝方式已 deprecated，請以官方安裝指南為主。
 
 #### Skills 位置
 
@@ -599,7 +647,7 @@ npm install -g @anthropic-ai/claude-code
 │   └── SKILL.md
 ├── data_layer_mastery/
 │   └── SKILL.md
-└── ... (共 14 個 Android skills)
+└── ... (共 16 個 Android skills)
 ```
 
 #### 使用方式 1：Slash Command（直接呼叫）
@@ -653,6 +701,10 @@ claude --disable-slash-commands
 **契合度：⭐⭐⭐⭐⭐ (完美 - 2026 支援 Agent Skills)**
 
 2026 年的 GitHub Copilot 支援 Agent Skills 和多層級 Instructions。
+
+官方文件：
+- 安裝：https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-extension
+- 入門：https://docs.github.com/en/copilot/get-started/quickstart
 
 #### Skills 位置（2026 新功能）
 
@@ -733,7 +785,17 @@ applyTo: "**/*.kt"
 
 **契合度：⭐⭐⭐⭐ (良好)**
 
+官方入口：
+- AI Studio：https://aistudio.google.com/
+- API Key：https://aistudio.google.com/apikey
+- Gemini API Docs：https://ai.google.dev/gemini-api/docs
+
 AWS 官方的 AI Coding Assistant。
+
+官方入門：
+- https://aws.amazon.com/q/developer/getting-started/
+
+登入方式：Builder ID 或 IAM Identity Center（依官方入門頁為準）
 
 #### 使用方式
 
@@ -750,6 +812,10 @@ AWS 官方的 AI Coding Assistant。
 **契合度：⭐⭐⭐⭐ (良好)**
 
 Android Studio / IntelliJ IDEA 的原生 AI。
+
+官方文件與外掛：
+- 使用說明：https://www.jetbrains.com/help/idea/ai-assistant.html
+- 外掛：https://plugins.jetbrains.com/plugin/22282-jetbrains-ai-assistant
 
 #### 方法 1：透過 Chat
 
@@ -786,6 +852,12 @@ Prompt:
 **契合度：⭐⭐⭐⭐ (良好)**
 
 使用 Claude Projects 可大幅提升體驗。
+
+官方文件：
+- Getting started：https://support.claude.com/en/articles/8114491-getting-started-with-claude
+- Projects：https://support.claude.com/en/articles/9517075-what-are-projects
+
+備註：Projects 為官方功能，免費帳號最多 5 個 Projects（依官方說明為準）。
 
 #### 方法 1：Claude Projects (推薦)
 
@@ -831,6 +903,11 @@ Prompt:
 
 **契合度：⭐⭐⭐ (手動)**
 
+官方文件：
+- Projects：https://help.openai.com/en/articles/10169521-projects-in-chatgpt
+- macOS App：https://help.openai.com/en/articles/9275200-downloading-the-chatgpt-macos-app
+- Android App：https://help.openai.com/en/articles/8167604-how-to-find-and-install-the-chatgpt-android-app-on-the-google-play-store
+
 #### 方法 1：Custom GPT (推薦)
 
 1. **ChatGPT Plus > Explore GPTs > Create**
@@ -843,6 +920,8 @@ Prompt:
 ```
 請參考 coding_style_conventions，檢查以下代碼...
 ```
+
+注意：Android App 請確認發行者為 OpenAI。
 
 #### 方法 2：一般對話
 
@@ -865,8 +944,9 @@ Prompt:
 
 #### 方法 1：System Instructions
 
-1. **開啟 AI Studio**
-2. **設定 System Instructions**：
+1. **開啟 AI Studio（網頁版）**
+2. **取得 API Key（需要登入）**
+3. **設定 System Instructions**：
 
 ```
 你是資深 Android 工程師。
@@ -897,6 +977,15 @@ Simon Willison 開發的強大 CLI 工具。
 
 ```bash
 pip install llm
+
+# 或使用 pipx
+pipx install llm
+
+# 或使用 uv
+uv tool install llm
+
+# 或使用 Homebrew
+brew install llm
 
 # 安裝 Claude plugin
 llm install llm-claude-3
@@ -948,10 +1037,18 @@ android-check ./UserRepository.kt
 
 OpenAI 官方的 Agentic Coding CLI，支援 Skills 系統。
 
+官方文件：
+- https://developers.openai.com/codex/cli
+- https://github.com/openai/codex
+
 #### 安裝
 
 ```bash
-npm install -g @openai/codex-cli
+# npm
+npm install -g @openai/codex
+
+# Homebrew
+brew install --cask codex
 ```
 
 #### Skills 位置
@@ -962,7 +1059,7 @@ npm install -g @openai/codex-cli
 │   └── SKILL.md
 ├── data_layer_mastery/
 │   └── SKILL.md
-└── ... (共 14 個 Android skills)
+└── ... (共 16 個 Android skills)
 ```
 
 #### 啟用 Skills 功能
@@ -1020,10 +1117,17 @@ Google 官方的 Agentic CLI，支援 Agent Skills 系統。
 #### 安裝
 
 ```bash
+# npx（免安裝）
+npx @google/gemini-cli
+
+# npm
 npm install -g @google/gemini-cli
 
-# 或使用 preview 版本（包含最新 skills 功能）
-npm install -g @google/gemini-cli@preview
+# Homebrew
+brew install gemini-cli
+
+# MacPorts
+sudo port install gemini-cli
 ```
 
 #### Skills 位置
@@ -1094,6 +1198,12 @@ Gemini 會根據 skill 的 `description` 自動判斷，但會詢問確認：
 
 可以自主執行任務的 AI。
 
+官方文件：
+- https://docs.openinterpreter.com/
+- 安裝：https://docs.openinterpreter.com/getting-started/setup
+
+建議 Python 版本：3.10 / 3.11
+
 #### 安裝
 
 ```bash
@@ -1122,11 +1232,20 @@ interpreter
 
 Daniel Miessler 開發的 AI Pattern 系統。
 
+官方文件：
+- https://github.com/danielmiessler/Fabric
+
 #### 安裝
 
 ```bash
-go install github.com/danielmiessler/fabric@latest
-fabric --setup
+# macOS/Linux
+curl -fsSL https://raw.githubusercontent.com/danielmiessler/Fabric/main/scripts/install | bash
+
+# Windows PowerShell
+iwr https://raw.githubusercontent.com/danielmiessler/Fabric/main/scripts/install.ps1 -useb | iex
+
+# Homebrew
+brew install fabric-ai
 ```
 
 #### 建立 Android Pattern
@@ -1184,6 +1303,10 @@ find ./app/src -name "*.kt" -exec cat {} \; | fabric --pattern android_review
 
 完全本地運行，適合敏感專案。
 
+官方文件：
+- Ollama Quickstart：https://docs.ollama.com/quickstart
+- Open WebUI：https://docs.openwebui.com/
+
 #### 安裝 Ollama
 
 ```bash
@@ -1191,8 +1314,7 @@ find ./app/src -name "*.kt" -exec cat {} \; | fabric --pattern android_review
 curl -fsSL https://ollama.com/install.sh | sh
 
 # 下載模型
-ollama pull llama3.1:70b
-ollama pull codellama:34b
+ollama run gemma3
 ```
 
 #### 安裝 Open WebUI
@@ -1217,20 +1339,22 @@ docker run -d -p 3000:8080 \
 
 ---
 
-### T. Opencode CLI
+### T. OpenCode CLI (opencode.ai)
 
 **契合度：⭐⭐⭐⭐⭐ (完美 - 強大的 Agentic CLI)**
 
-Opencode CLI 是一款 2026 年新興的 AI Coding Agent，以其強大的 TUI 介面和對本地模型 (Ollama) 的原生支援著稱。
+OpenCode 是 opencode.ai 的官方 CLI 工具，提供 TUI 介面與本地模型支援。
+
+官方文件：
+- https://opencode.ai/
+- https://opencode.ai/docs
+- https://github.com/anomalyco/opencode
 
 #### 安裝
 
 ```bash
-# MacOS / Linux
+# macOS / Linux
 curl -fsSL https://opencode.ai/install | bash
-
-# npm (跨平台)
-npm install -g opencode
 ```
 
 #### 基本操作
@@ -1241,30 +1365,13 @@ opencode
 > /init
 ```
 
-#### 全域技能安裝
+#### 技能使用
 
-已將 Android Skills 安裝至 Opencode CLI 全域目錄：
-`~\AppData\Roaming\opencode\agents\android_skills\`
-
-引用方式：
-
-```bash
-# 引用技能 (Opencode 支援自動識別 global agent skills)
-> @project_bootstrapping 請建立新專案
-
-# 或使用絕對路徑引用
-> 請參考 @~/AppData/Roaming/opencode/agents/android_skills/coding_style_conventions/SKILL.md
-> 檢查這個專案的命名規範
-
-# 組合多個技能
-> 請參考 @~/AppData/Roaming/opencode/agents/android_skills/legacy_rapid_expansion/SKILL.md
-> 與 @~/AppData/Roaming/opencode/agents/android_skills/tech_stack_migration/SKILL.md
-> 幫我規劃 PaymentManager 的重構
-```
+請依官方文件設定技能路徑與使用方式，確保與 OpenCode 版本一致。
 
 #### Plan Mode (規劃模式)
 
-Opencode 的強項在於先規劃再執行：
+OpenCode 的強項在於先規劃再執行：
 
 1. 按 `Tab` 切換到 **Plan Mode**
 2. 輸入指令：
@@ -1276,8 +1383,8 @@ Opencode 的強項在於先規劃再執行：
 
 #### 最佳實踐
 
-1. **利用 AGENTS.md**：可以在 `.opencode/agents` 或 `AGENTS.md` 中定義專屬 Agent，預載入常用 Skills。
-2. **本地模型整合**：配合 @devops_and_security 中的隱私規範，可完全使用 Ollama 運行以免感資料外洩。
+1. **利用 AGENTS.md**：可以在專案內定義專屬 Agent，預載入常用 Skills。
+2. **本地模型整合**：配合 @devops_and_security 中的隱私規範，可完全使用本地模型以避免敏感資料外洩。
 
 ---
 
@@ -1382,6 +1489,110 @@ aider --model claude-3-5-sonnet-20241022 \
 
 ---
 
+### 場景 G：AI-assisted CI / Quality Gates (完整流程)
+
+#### 使用 Aider
+
+```bash
+# Step 1: 啟動並載入技能
+aider --model claude-3-5-sonnet-20241022 \
+  --read ~/.gemini/antigravity/skills/coding_style_conventions/SKILL.md \
+  --read ~/.gemini/antigravity/skills/devops_and_security/SKILL.md \
+  --read ~/.gemini/antigravity/skills/testing_legacy_strategies/SKILL.md
+
+# Step 2: 建立 CI Gate
+請建立 CI Gate：lint、detekt、unit test、assemble
+
+# Step 3: 驗收
+請對照三份技能的 Quick Checklist 驗收
+```
+
+---
+
+### 場景 H：Performance-by-default (完整流程)
+
+#### 使用 Cursor
+
+```
+Step 1: 設定效能基準
+@deep_performance_tuning 請建立 Baseline Profile 與 Macrobenchmark
+
+Step 2: 新專案預設
+@project_bootstrapping 請將效能量測流程納入專案骨架
+
+Step 3: CI Gate
+@devops_and_security 將效能門檻納入 CI Gate
+```
+
+---
+
+### 場景 I：Observability-first (完整流程)
+
+#### 使用 Cursor
+
+```
+Step 1: 指標與事件
+@observability_first 請定義關鍵流程與事件欄位
+
+Step 2: Crash/ANR
+@crash_monitoring 建立 Crashlytics 與 ANR 告警
+
+Step 3: 效能指標
+@deep_performance_tuning 加入效能量測與回歸規則
+```
+
+---
+
+### 場景 J：Supply Chain Security (完整流程)
+
+#### 使用 Aider
+
+```bash
+# Step 1: 依賴治理
+aider --model claude-3-5-sonnet-20241022 \
+  --read ~/.gemini/antigravity/skills/supply_chain_security/SKILL.md \
+  --read ~/.gemini/antigravity/skills/devops_and_security/SKILL.md
+
+# Step 2: SCA + Gate
+請建立依賴掃描與風險門檻，納入 CI
+```
+
+---
+
+### 場景 K：Compose-first + Legacy Interop (完整流程)
+
+#### 使用 Cursor
+
+```
+Step 1: 互通策略
+@tech_stack_migration 請設計 Compose/View 共存策略
+
+Step 2: UI 規範
+@ui_ux_engineering 建立 Design System 與 a11y 驗收
+
+Step 3: 舊專案橋接
+@legacy_rapid_expansion 設計 Bridge 與 Feature Toggle
+```
+
+---
+
+### 場景 L：多模組擴展與導航治理 (完整流程)
+
+#### 使用 Cursor
+
+```
+Step 1: 模組骨架
+@project_bootstrapping 請規劃模組與 Convention Plugins
+
+Step 2: DI 邊界
+@dependency_injection_mastery 建立 API/impl 分離
+
+Step 3: 導航治理
+@navigation_patterns 設計跨模組導航介面
+```
+
+---
+
 ## 進階整合技巧
 
 ### 1. Git Pre-commit Hook
@@ -1470,7 +1681,7 @@ Set-Alias -Name android-review -Value Invoke-AndroidReview
 - **Claude 使用者**: Claude Code CLI (使用 /skill_name)
 - **OpenAI 使用者**: Codex CLI (使用 $skill_name)
 - **最佳體驗**: Cursor / Windsurf
-- **CLI 愛好者**: Aider / Opencode CLI
+- **CLI 愛好者**: Aider / OpenCode CLI
 - **完全本地**: Ollama + Open WebUI
 - **團隊共享**: Claude Projects
 
@@ -1512,17 +1723,27 @@ Set-Alias -Name android-review -Value Invoke-AndroidReview
 └───────────────────────────────────────────────────────────────────────┘
 ```
 
+註：各工具的技能載入指令以官方文件為準，若版本差異請依官方更新。
+
 ### Skills 安裝位置對照
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    2026 CLI Skills 標準位置                  │
-├─────────────────────────────────────────────────────────────┤
-│ Opencode CLI │ ~/AppData/Roaming/opencode/agents/          │
-│ Claude Code  │ ~/.claude/skills/<skill-name>/SKILL.md      │
-│ Codex CLI    │ ~/.codex/skills/<skill-name>/SKILL.md       │
-│ Gemini CLI   │ ~/.gemini/skills/<skill-name>/SKILL.md      │
-└─────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────────────┐
+│                    2026 CLI Skills 標準位置                                    │
+├───────────────────────────────────────────────────────────────────────────────┤
+│ OpenCode CLI  │ Windows: %USERPROFILE%\AppData\Roaming\opencode\agents          │
+│               │ macOS/Linux: ~/.opencode/agents                                 │
+│ Claude Code   │ Windows: %USERPROFILE%\.claude\skills\<skill-name>\SKILL.md      │
+│               │ macOS/Linux: ~/.claude/skills/<skill-name>/SKILL.md             │
+│ Codex CLI     │ Windows: %USERPROFILE%\.codex\skills\<skill-name>\SKILL.md       │
+│               │ macOS/Linux: ~/.codex/skills/<skill-name>/SKILL.md              │
+│ Gemini CLI    │ Windows: %USERPROFILE%\.gemini\skills\<skill-name>\SKILL.md      │
+│               │ macOS/Linux: ~/.gemini/skills/<skill-name>/SKILL.md             │
+│ Antigravity   │ Windows: %USERPROFILE%\.gemini\antigravity\skills                │
+│               │ macOS/Linux: ~/.gemini/antigravity/skills                        │
+└───────────────────────────────────────────────────────────────────────────────┘
 ```
+
+簡短說明：若你的 CLI 已內建 skills 機制，請把對應的 skill 目錄放到以上標準位置；若版本不同，請以官方文件為準並保留此表作為預設值。
 
 

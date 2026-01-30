@@ -5,7 +5,39 @@ description: Systrace, Memory Analysis, R8 優化與 App Startup 調校
 
 # Deep Performance Tuning (深度效能優化)
 
-**Related Scenarios**: D (效能問題), E (發布準備)
+## Instructions
+- 僅在有量測數據或明確瓶頸時使用
+- 依照下方章節順序套用
+- 一次只施作一種優化並驗證效果
+- 完成後對照 Quick Checklist
+
+## When to Use
+- Scenario D：效能問題排查
+- Scenario E：發布前效能驗證
+
+## Example Prompts
+- "請參考 App Startup Optimization，建立 Macrobenchmark 測量"
+- "用 Memory Analysis 章節，規劃記憶體分析流程"
+- "請依照 R8/Proguard Optimization，檢查規則是否完整"
+
+## Workflow
+1. 先建立量測基準（Startup/Memory/UI）
+2. 再逐一套用對應優化手段
+3. 最後用 Quick Checklist 驗收
+
+## Practical Notes (2026)
+- Baseline Profile + Macrobenchmark 作為預設流程
+- 每次只做一項優化並量測差異
+- 效能門檻要進 CI Gate
+
+## Minimal Template
+```
+目標: 
+量測基準: 
+優化範圍: 
+回歸指標: 
+驗收: Quick Checklist
+```
 
 ---
 

@@ -5,7 +5,40 @@ description: Design System 實作、複雜 UI 模式與 Accessibility
 
 # UI/UX Engineering (UI/UX 工程化)
 
-**Related Scenarios**: A (新專案), B (舊專案加功能), D (效能問題)
+## Instructions
+- 確認需求屬於 UI 架構、互動或可近用性
+- 依照下方章節順序套用
+- 一次只調整一種 UI 模式或設計 token
+- 完成後對照 Quick Checklist
+
+## When to Use
+- Scenario A：新專案設計系統建立
+- Scenario B：舊專案新增 UI 功能
+- Scenario D：UI 效能與體驗問題
+
+## Example Prompts
+- "請依照 Design System Implementation 章節，建立主題與 spacing"
+- "請參考 Complex UI Patterns，實作 Collapsing Toolbar"
+- "用 Accessibility 章節檢視主要流程是否符合 a11y"
+
+## Workflow
+1. 先建立 Design System 的基礎 tokens
+2. 再套用 Complex UI Patterns 與 Adaptive Layouts
+3. 最後用 Accessibility 與 Quick Checklist 驗收
+
+## Practical Notes (2026)
+- Compose-first，但保留 View/Fragment 互通規範
+- a11y 驗收必包含 TalkBack 走查與觸控目標
+- UI 效能以重組與列表滾動為優先檢查點
+
+## Minimal Template
+```
+目標: 
+畫面範圍: 
+設計規範: 
+a11y 要求: 
+驗收: Quick Checklist
+```
 
 ---
 

@@ -5,7 +5,38 @@ description: 在舊架構中快速建立新功能的 Islanding 策略
 
 # Legacy Rapid Expansion (舊專案快速擴充)
 
-**Related Scenarios**: B (舊專案加功能)
+## Instructions
+- 僅在舊專案加入新功能時使用
+- 依照下方章節順序套用
+- 一次只建立一個隔離區與橋接點
+- 完成後對照 Quick Checklist
+
+## When to Use
+- Scenario B：舊專案加新功能
+
+## Example Prompts
+- "請依照 Islanding Architecture 建立 modern/ 與 bridge/"
+- "用 Hybrid Theming 章節讓新 Compose UI 沿用舊 Theme"
+- "請用 Feature Toggle 章節設計新功能開關"
+
+## Workflow
+1. 先建立 Islanding Architecture 與 Bridge Pattern
+2. 再處理 Hybrid Theming 與 Wrapper Activities
+3. 最後用 Feature Toggle 與 Quick Checklist 驗收
+
+## Practical Notes (2026)
+- 新功能必須獨立於 legacy 內部實作
+- Bridge API 需穩定，避免頻繁變更造成擴散
+- Feature Toggle 作為上線與回退的唯一入口
+
+## Minimal Template
+```
+目標: 
+隔離範圍: 
+Bridge 契約: 
+Toggle 策略: 
+驗收: Quick Checklist
+```
 
 ---
 

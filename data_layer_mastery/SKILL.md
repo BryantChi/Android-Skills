@@ -5,7 +5,40 @@ description: Room 進階用法、Retrofit 整合與 Offline-First 架構
 
 # Data Layer Mastery (資料層專精)
 
-**Related Scenarios**: A (新專案), D (效能), F (KMP)
+## Instructions
+- 確認需求屬於資料層（Room、網路、離線策略）
+- 依照下方章節順序套用
+- 一次只調整一個資料流或責任邊界
+- 完成後對照 Quick Checklist
+
+## When to Use
+- Scenario A：新專案資料層建立
+- Scenario D：效能問題的資料層瓶頸
+- Scenario F：KMP 共享資料層設計
+
+## Example Prompts
+- "請參考 Room Advanced，幫我設計 Migration 策略"
+- "依照 Network Layer 章節，建立統一的錯誤處理"
+- "請用 Offline-First 章節檢視目前 Repository 是否符合 SSOT"
+
+## Workflow
+1. 先檢查 Room / Network 的基礎設計
+2. 再確立 Offline-First 與資料同步策略
+3. 最後用 Quick Checklist 驗收
+
+## Practical Notes (2026)
+- Offline-first 只在不穩網路或高一致性需求時啟用
+- Repository 必須是 SSOT，避免多處來源競爭
+- 錯誤處理統一化，避免每層自行判斷
+
+## Minimal Template
+```
+目標: 
+資料來源: 
+快取策略: 
+錯誤處理: 
+驗收: Quick Checklist
+```
 
 ---
 

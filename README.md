@@ -8,7 +8,7 @@
 
 ## 🛠️ 技能列表
 
-這個技能庫包含以下 14 個專業領域的技能：
+這個技能庫包含以下 16 個專業領域的技能：
 
 | 技能目錄 | 用途簡述 |
 |---------|---------|
@@ -26,6 +26,8 @@
 | **`devops_and_security`** | CI/CD 自動化與應用程式安全加固 |
 | **`crash_monitoring`** | Crashlytics 設定與 ANR 分析 |
 | **`kotlin_multiplatform`** | KMP 跨平台架構與邏輯共享 |
+| **`observability_first`** | 可觀測性優先與指標閉環 |
+| **`supply_chain_security`** | 依賴治理與供應鏈安全 |
 
 ## 🚀 快速開始 (Antigravity)
 

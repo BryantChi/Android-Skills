@@ -5,7 +5,38 @@ description: KMP 跨平台架構、共享邏輯與平台整合
 
 # Kotlin Multiplatform (KMP 跨平台)
 
-**Related Scenarios**: F (跨平台共享邏輯)
+## Instructions
+- 僅在需要跨平台共享邏輯時使用
+- 依照下方章節順序套用
+- 一次只擴充一個共享模組或平台端整合
+- 完成後對照 Quick Checklist
+
+## When to Use
+- Scenario F：跨平台共享邏輯
+
+## Example Prompts
+- "請依照 Architecture Decision，界定可共享與不可共享範圍"
+- "用 Project Setup 章節建立 shared 模組"
+- "請參考 Ktor Client 與 SQLDelight，規劃跨平台資料層"
+
+## Workflow
+1. 先定義共享邊界與專案結構
+2. 再落實 Network/Database 的 expect/actual
+3. 最後用 Testing Shared Code 與 Quick Checklist 驗收
+
+## Practical Notes (2026)
+- 共享邏輯必限制在 Domain/Data，避免 UI 共享
+- commonTest 必覆蓋核心業務流程
+- 平台特性變更需回寫到共享邊界文件
+
+## Minimal Template
+```
+目標: 
+共享邊界: 
+平台差異: 
+測試策略: 
+驗收: Quick Checklist
+```
 
 ---
 

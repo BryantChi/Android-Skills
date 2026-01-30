@@ -5,7 +5,39 @@ description: 為無測試的舊代碼建立安全網的策略
 
 # Testing Legacy Strategies (遺留代碼測試)
 
-**Related Scenarios**: C (舊專案現代化), F (KMP)
+## Instructions
+- 僅在缺乏測試的既有代碼上使用
+- 依照下方章節順序建立安全網
+- 一次只鎖定一類行為或輸出
+- 完成後對照 Quick Checklist
+
+## When to Use
+- Scenario C：舊專案現代化前的安全網
+- Scenario F：共享邏輯需要測試保障
+
+## Example Prompts
+- "請依照 Characterization Tests 章節，替這個類別建立現狀測試"
+- "用 Robolectric 章節，為依賴 Framework 的 Activity 寫測試"
+- "請用 Detekt/Lint Baseline 章節建立技術債控管"
+
+## Workflow
+1. 先建立 Characterization Tests 鎖定行為
+2. 再補齊 Framework 測試與 MockK 策略
+3. 最後用 Quick Checklist 驗收
+
+## Practical Notes (2026)
+- 測試輸出必須可重複與可比對
+- 每次只鎖定一類行為，避免測試爆量
+- Baseline 逐步收斂，避免一次性大改
+
+## Minimal Template
+```
+目標: 
+測試範圍: 
+行為鎖定: 
+回歸方式: 
+驗收: Quick Checklist
+```
 
 ---
 

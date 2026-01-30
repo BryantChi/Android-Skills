@@ -7,6 +7,36 @@ description: 資深 Android 工程師技能導航中心，根據場景推薦適�
 
 此技能作為所有 Android 技能的入口點與導航器。
 
+## Instructions
+- 先描述你的目標與現況（新專案、舊專案、效能問題等）
+- 使用 Scenario Router 選擇技能組合
+- 只載入當下需要的 2-3 個技能
+- 完成後回到這裡確認是否漏掉關鍵能力
+
+## When to Use
+- 不確定該載入哪些技能時
+- 任務涵蓋多個領域，需要組合技能時
+- 想依情境快速建立操作流程時
+
+## Example Prompts
+- "我在做舊專案現代化，請推薦需要的技能組合"
+- "效能很差，請告訴我應該先用哪些技能排查"
+- "我要建立新專案，請給我最短的技能路徑"
+
+## Workflow
+1. 先在 Scenario Router 找到最接近的情境
+2. 依順序載入對應技能並執行
+3. 任務完成後回到 Skill Dependency Graph 檢查漏項
+
+## Minimal Template
+```
+目標: 
+現況: 
+情境: 
+建議技能: 
+驗收: 依 Quick Checklist
+```
+
 ## Quick Reference (快速索引)
 
 | Skill | 一句話描述 | 適用場景 |
@@ -24,6 +54,8 @@ description: 資深 Android 工程師技能導航中心，根據場景推薦適�
 | `devops_and_security` | CI/CD, Fastlane, 資安加固 | 發布準備 |
 | `crash_monitoring` | Crashlytics, ANR 分析 | 線上監控 |
 | `kotlin_multiplatform` | KMP 跨平台架構 | 跨平台準備 |
+| `observability_first` | 可觀測性優先與指標閉環 | 監控體系 |
+| `supply_chain_security` | 依賴治理與供應鏈安全 | 發布安全 |
 
 ---
 
@@ -83,6 +115,48 @@ description: 資深 Android 工程師技能導航中心，根據場景推薦適�
 4. testing_legacy_strategies → 共享測試
 ```
 
+### 🧭 場景 G：AI-assisted CI / Quality Gates
+```
+1. coding_style_conventions → 規範與檢核
+2. devops_and_security      → CI Gate 與自動化
+3. testing_legacy_strategies → 測試安全網
+```
+
+### 📈 場景 H：Performance-by-default
+```
+1. deep_performance_tuning  → 基準量測
+2. project_bootstrapping    → 預設效能配置
+3. devops_and_security      → CI 量測與門檻
+```
+
+### 🔍 場景 I：Observability-first
+```
+1. observability_first      → 指標與回饋閉環
+2. crash_monitoring         → Crash/ANR/Logs
+3. deep_performance_tuning  → 效能指標
+```
+
+### 🧱 場景 J：Supply Chain Security
+```
+1. supply_chain_security    → 依賴與密鑰治理
+2. devops_and_security      → CI 與發版安全
+3. coding_style_conventions → 規範與審查標準
+```
+
+### 🧩 場景 K：Compose-first + Legacy Interop
+```
+1. tech_stack_migration     → Compose/View 共存
+2. ui_ux_engineering        → Design System 與 a11y
+3. legacy_rapid_expansion   → 舊專案橋接
+```
+
+### 🧭 場景 L：多模組擴展與導航治理
+```
+1. project_bootstrapping    → 模組與插件
+2. dependency_injection_mastery → 模組邊界
+3. navigation_patterns      → 跨模組導航
+```
+
 ---
 
 ## Skill Dependency Graph
@@ -121,7 +195,16 @@ description: 資深 Android 工程師技能導航中心，根據場景推薦適�
 │navigation_      │
 │   patterns      │
 └─────────────────┘
+                          │                 │
+                          ▼                 ▼
+                ┌─────────────────┐ ┌─────────────────┐
+                │observability_   │ │supply_chain_    │
+                │   first         │ │  security       │
+                └─────────────────┘ └─────────────────┘
 ```
+
+## Notes
+- `observability_first` 與 `supply_chain_security` 為 2026 追加技能
 
 ---
 

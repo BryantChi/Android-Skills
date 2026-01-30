@@ -5,7 +5,38 @@ description: View→Compose, RxJava→Flow 等技術遷移指南
 
 # Tech Stack Migration (技術遷移)
 
-**Related Scenarios**: C (舊專案現代化)
+## Instructions
+- 僅在需要漸進式遷移時使用
+- 依照下方章節順序套用
+- 一次只替換一個技術棧
+- 完成後對照 Quick Checklist
+
+## When to Use
+- Scenario C：舊專案現代化
+
+## Example Prompts
+- "請依照 View → Compose 章節，幫我嵌入 ComposeView"
+- "用 RxJava → Flow 對照表，改寫這段 stream"
+- "請用 LiveData → StateFlow 的步驟規劃遷移"
+
+## Workflow
+1. 先確認要遷移的技術棧與範圍
+2. 依序套用對應章節的範例與對照表
+3. 最後用 Quick Checklist 驗收
+
+## Practical Notes (2026)
+- 遷移必先有可驗證的測試安全網
+- 一次只遷移一個維度（UI 或 Data 或 DI）
+- 指標回歸後才能推進下一步
+
+## Minimal Template
+```
+目標: 
+遷移範圍: 
+測試安全網: 
+回歸指標: 
+驗收: Quick Checklist
+```
 
 ---
 

@@ -5,7 +5,39 @@ description: Kotlin 代碼規範、Linter 配置與 Code Review 檢核標準
 
 # Coding Style Conventions (代碼規範)
 
-**Related Scenarios**: A (新專案), C (舊專案現代化)
+## Instructions
+- 確認需求屬於本技能範圍（命名、格式、檢核）
+- 依照下方章節順序套用
+- 一次只調整一類規範，避免混雜變更
+- 完成後對照 Quick Checklist
+
+## When to Use
+- Scenario A：新專案建立規範
+- Scenario C：舊專案現代化基準
+
+## Example Prompts
+- "請參考本技能的 Naming Conventions，檢查這段 Kotlin 代碼命名是否一致"
+- "依照 Detekt 與 Ktlint 配置章節，幫我建立專案規範"
+- "請用 Code Review Checklist 審視這個 PR 的風格問題"
+
+## Workflow
+1. 先對照 Naming Conventions 設定命名規則
+2. 再依 Detekt / Ktlint 配置落實到專案
+3. 最後用 Code Review Checklist 驗收
+
+## Practical Notes (2026)
+- CI Gate 僅針對變更檔案執行 Lint/Detekt/Ktlint
+- 規範調整與功能變更分開提交，方便回溯
+- Code Review 以 Checklist 作為硬性驗收
+
+## Minimal Template
+```
+目標: 
+適用範圍: 
+規範重點: 
+檢核方式: 
+驗收: Quick Checklist
+```
 
 ---
 

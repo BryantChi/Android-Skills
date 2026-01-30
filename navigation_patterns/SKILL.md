@@ -5,7 +5,39 @@ description: Deep Links、跨模組導航與複雜 Back Stack 管理
 
 # Navigation Patterns (導航模式)
 
-**Related Scenarios**: A (新專案), B (舊專案擴充)
+## Instructions
+- 確認需求屬於導覽與 Back Stack 管理
+- 依照下方章節順序套用
+- 一次只處理一個導航面向（Deep Link、跨模組、Back Stack）
+- 完成後對照 Quick Checklist
+
+## When to Use
+- Scenario A：新專案導航設計
+- Scenario B：舊專案擴充與導航橋接
+
+## Example Prompts
+- "請參考 Type-Safe Args，更新我的 NavHost 寫法"
+- "依照 Deep Links 章節，幫我加入 App Links"
+- "請用 Multi-Module Navigation 設計跨模組導航介面"
+
+## Workflow
+1. 先建立 Compose Navigation 基礎路由
+2. 再加入 Deep Links 與跨模組導航
+3. 最後用 Back Stack 管理與 Quick Checklist 驗收
+
+## Practical Notes (2026)
+- 預設採用 type-safe args，避免字串路由散落
+- Deep Link 必須有驗證與回歸測試流程
+- Back Stack 規則統一化，避免各模組自訂邏輯
+
+## Minimal Template
+```
+目標: 
+路由範圍: 
+Deep Link: 
+Back Stack 規則: 
+驗收: Quick Checklist
+```
 
 ---
 

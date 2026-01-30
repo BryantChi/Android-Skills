@@ -5,7 +5,38 @@ description: CI/CD 自動化、Gradle 優化與應用程式安全加固
 
 # DevOps and Security (DevOps 與資安)
 
-**Related Scenarios**: E (發布準備)
+## Instructions
+- 僅在發布準備或流程自動化需求時使用
+- 依照下方章節順序套用
+- 一次只處理一個 pipeline 或安全措施
+- 完成後對照 Quick Checklist
+
+## When to Use
+- Scenario E：App 發布準備
+
+## Example Prompts
+- "請依照 Build Speed Optimization，調整 Gradle 設定"
+- "用 CI Quality Gates 章節建立 GitHub Actions"
+- "請參考 Security Hardening，檢查 secrets 與網路安全"
+
+## Workflow
+1. 先建立 Build Speed 與 CI Quality Gates
+2. 再導入 Fastlane 與 Security Hardening
+3. 最後用 Quick Checklist 驗收
+
+## Practical Notes (2026)
+- 依賴來源與版本必有審核與鎖定策略
+- Secrets 僅能透過環境變數或安全儲存
+- CI Gate 必含 Lint/Detekt/Test/Build
+
+## Minimal Template
+```
+目標: 
+CI Gate: 
+安全措施: 
+發版流程: 
+驗收: Quick Checklist
+```
 
 ---
 

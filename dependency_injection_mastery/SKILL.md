@@ -5,7 +5,40 @@ description: Hilt 進階用法、Custom Components 與 Multi-binding 模式
 
 # Dependency Injection Mastery (依賴注入專精)
 
-**Related Scenarios**: A (新專案), C (現代化), F (KMP)
+## Instructions
+- 確認問題屬於 DI 架構或 Scope 設計
+- 依照下方章節順序套用
+- 一次只調整一種注入模式或 module
+- 完成後對照 Quick Checklist
+
+## When to Use
+- Scenario A：新專案 DI 架構建立
+- Scenario C：舊專案現代化與模組拆分
+- Scenario F：KMP 共用模組的 DI 調整
+
+## Example Prompts
+- "請參考 Assisted Injection，替 ViewModel 加入動態參數"
+- "依照 Custom Hilt Components 建立 User Session Scope"
+- "請用 Multi-binding 章節設計插件式支付模組"
+
+## Workflow
+1. 先確認 Assisted Injection 與 Scope 需求
+2. 再整理 Module Organization 與 Qualifier
+3. 最後用 Quick Checklist 驗收
+
+## Practical Notes (2026)
+- 多模組採 API/impl 分離，避免跨模組直接依賴實作
+- 跨模組導航與 Service 以 interface + EntryPoint 統一
+- Scope 設計先畫出生命週期，再落地到 Module
+
+## Minimal Template
+```
+目標: 
+Scope: 
+Module 結構: 
+注入模式: 
+驗收: Quick Checklist
+```
 
 ---
 

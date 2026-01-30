@@ -5,7 +5,38 @@ description: 快速建立專案骨架、Gradle Convention Plugins 與標準化�
 
 # Project Bootstrapping (專案快速建置)
 
-**Related Scenarios**: A (新專案)
+## Instructions
+- 僅在新專案或新模組起步時使用
+- 依照下方章節順序建立骨架
+- 一次只處理一個子系統（插件、版本、結構）
+- 完成後對照 Quick Checklist
+
+## When to Use
+- Scenario A：從零建立新專案
+
+## Example Prompts
+- "請依照 One-Command Setup，建立公司模板的專案骨架"
+- "依照 Gradle Convention Plugins 章節，建立 feature module 插件"
+- "請根據 Package Structure 規劃模組與套件配置"
+
+## Workflow
+1. 先建立 Template 與目錄結構
+2. 再落實 Convention Plugins 與 Version Catalog
+3. 最後用 Quick Checklist 驗收
+
+## Practical Notes (2026)
+- 預設建立 CI Gate：lint、detekt、unit test、assemble
+- 新專案先建立 Baseline Profile 量測框架
+- Version Catalog 作為單一依賴來源
+
+## Minimal Template
+```
+目標: 
+模組範圍: 
+Convention Plugins: 
+CI Gate: 
+驗收: Quick Checklist
+```
 
 ---
 

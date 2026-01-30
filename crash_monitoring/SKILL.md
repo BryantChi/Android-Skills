@@ -5,7 +5,39 @@ description: Crashlytics 設定、ANR 分析與結構化日誌
 
 # Crash Monitoring (當機監控)
 
-**Related Scenarios**: D (效能問題), E (發布準備)
+## Instructions
+- 確認需求屬於當機/ANR/日誌監控
+- 依照下方章節順序套用
+- 一次只調整一種監控或警報設定
+- 完成後對照 Quick Checklist
+
+## When to Use
+- Scenario D：效能問題排查
+- Scenario E：發布前監控準備
+
+## Example Prompts
+- "請依照 Firebase Crashlytics Setup，完成 Crashlytics 整合"
+- "用 ANR Analysis 章節加入 StrictMode 與 ANR Watchdog"
+- "請依 Structured Logging 章節統一日誌格式"
+
+## Workflow
+1. 先完成 Crashlytics 基本設定與 Custom Keys
+2. 再加入 ANR 與 Structured Logging
+3. 最後用 Dashboard & Alerting 與 Quick Checklist 驗收
+
+## Practical Notes (2026)
+- Release 前先確立 Crash/ANR 的告警門檻
+- 重要流程必有結構化事件與關鍵鍵值
+- Non-Fatal 記錄以高價值事件為主
+
+## Minimal Template
+```
+目標: 
+監控範圍: 
+告警門檻: 
+事件欄位: 
+驗收: Quick Checklist
+```
 
 ---
 
