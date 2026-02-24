@@ -1,4 +1,5 @@
 ---
+id: project_bootstrapping
 name: Project Bootstrapping
 description: 快速建立專案骨架、Gradle Convention Plugins 與標準化架構
 ---

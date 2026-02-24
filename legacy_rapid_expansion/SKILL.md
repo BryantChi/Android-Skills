@@ -1,4 +1,5 @@
 ---
+id: legacy_rapid_expansion
 name: Legacy Rapid Expansion
 description: 在舊架構中快速建立新功能的 Islanding 策略
 ---

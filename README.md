@@ -12,7 +12,7 @@
 
 | 技能目錄 | 用途簡述 |
 |---------|---------|
-| **`skill_index`** | 技能導航中心，協助選擇適合的技能組合 |
+| **`android_skill_index`** | 技能導航中心，協助選擇適合的技能組合 |
 | **`coding_style_conventions`** | Kotlin 代碼規範、Linter 配置與 Code Review 標準 |
 | **`project_bootstrapping`** | 快速建立專案架構、Gradle Convention Plugins |
 | **`ui_ux_engineering`** | Design System、Accessibility 與複雜 UI 模式 |
@@ -40,5 +40,5 @@
 或先諮詢技能索引：
 
 ```
-@skill_index 我有一個舊專案需要重構，請推薦適合的技能
+@android_skill_index 我有一個舊專案需要重構，請推薦適合的技能
 ```

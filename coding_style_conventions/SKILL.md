@@ -1,4 +1,5 @@
 ---
+id: coding_style_conventions
 name: Coding Style Conventions
 description: Kotlin 代碼規範、Linter 配置與 Code Review 檢核標準
 ---

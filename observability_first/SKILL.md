@@ -1,4 +1,5 @@
 ---
+id: observability_first
 name: Observability First
 description: Crash/ANR/Logs/Performance 指標與回饋閉環
 ---

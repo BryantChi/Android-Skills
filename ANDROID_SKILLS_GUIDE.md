@@ -39,7 +39,7 @@
 
 | # | Skill 名稱 | 用途簡述 | 檔案路徑 |
 |---|-----------|---------|---------|
-| 1 | `skill_index` | 技能導航中心 | `skill_index/SKILL.md` |
+| 1 | `android_skill_index` | 技能導航中心 | `android_skill_index/SKILL.md` |
 | 2 | `coding_style_conventions` | 代碼規範、Detekt/Ktlint | `coding_style_conventions/SKILL.md` |
 | 3 | `project_bootstrapping` | 專案快速建置、Convention Plugins | `project_bootstrapping/SKILL.md` |
 | 4 | `ui_ux_engineering` | Design System、Accessibility | `ui_ux_engineering/SKILL.md` |
@@ -72,7 +72,7 @@
 
 ### 原則 2：使用場景路由 (Scenario Router)
 
-先參考 `skill_index/SKILL.md` 選擇技能組合：
+先參考 `android_skill_index/SKILL.md` 選擇技能組合：
 
 | 場景 | 描述 | 建議載入的技能 |
 |------|------|--------------|
@@ -133,7 +133,7 @@ npm install -g @anthropic-ai/antigravity
 
 ```
 ~/.gemini/antigravity/skills/
-├── skill_index/SKILL.md
+├── android_skill_index/SKILL.md
 ├── coding_style_conventions/SKILL.md
 ├── project_bootstrapping/SKILL.md
 └── ... (共 16 個)
@@ -171,8 +171,8 @@ Antigravity 會自動掃描 `~/.gemini/antigravity/skills/` 目錄下的技能�
 #### 使用方式 4：場景導向
 
 ```
-# 先諮詢 skill_index
-@skill_index 我要進行舊專案現代化，請推薦適合的技能組合
+# 先諮詢 android_skill_index
+@android_skill_index 我要進行舊專案現代化，請推薦適合的技能組合
 
 # AI 會推薦：
 # - testing_legacy_strategies
@@ -221,7 +221,7 @@ description: Android Code Review 流程
 #### 最佳實踐
 
 1. **技能已內建**：這些技能放在 `~/.gemini/antigravity/skills/`，Antigravity 會自動識別
-2. **使用場景路由**：先 `@skill_index` 獲取建議
+2. **使用場景路由**：先 `@android_skill_index` 獲取建議
 3. **組合使用**：同時引用 2-3 個相關技能
 4. **Checklist 驗收**：任務結束前要求使用 Quick Checklist
 
@@ -326,7 +326,7 @@ Windsurf 的 Cascade 功能非常適合多步驟任務。
 ```
 # 開啟 Cascade (Cmd/Ctrl + L)
 
-@skill_index 我要進行舊專案現代化，請告訴我步驟
+@android_skill_index 我要進行舊專案現代化，請告訴我步驟
 
 # Cascade 會自動規劃多步驟任務
 ```
@@ -913,7 +913,7 @@ Prompt:
 1. **ChatGPT Plus > Explore GPTs > Create**
 2. **配置**：
    - Name: Android Senior Engineer
-   - Instructions: 貼入 `skill_index/SKILL.md` 內容
+   - Instructions: 貼入 `android_skill_index/SKILL.md` 內容
    - Knowledge: 上傳所有 SKILL.md 檔案
 
 3. **使用**：
@@ -1396,7 +1396,7 @@ OpenCode 的強項在於先規劃再執行：
 
 ```
 Step 1: 規劃
-@skill_index 我要建立一個新的電商 App，
+@android_skill_index 我要建立一個新的電商 App，
 需要 Auth, Product, Cart, Checkout 四個功能，
 請告訴我應該使用哪些技能和步驟
 
@@ -1430,7 +1430,7 @@ Step 5: 驗收
 ```bash
 # 啟動
 aider --model claude-3-5-sonnet-20241022 \
-  --read ~/.gemini/antigravity/skills/skill_index/SKILL.md \
+  --read ~/.gemini/antigravity/skills/android_skill_index/SKILL.md \
   --read ~/.gemini/antigravity/skills/project_bootstrapping/SKILL.md \
   --read ~/.gemini/antigravity/skills/coding_style_conventions/SKILL.md \
   --read ~/.gemini/antigravity/skills/ui_ux_engineering/SKILL.md
@@ -1660,7 +1660,7 @@ Set-Alias -Name android-review -Value Invoke-AndroidReview
 ### Q1: Token 不夠怎麼辦？
 **A:** 
 - 只載入當下需要的 2-3 個技能
-- 使用 `skill_index` 的場景路由選擇組合
+- 使用 `android_skill_index` 的場景路由選擇組合
 - 對於 CLI 工具，使用 `-read` 而非 `/add`
 
 ### Q2: AI 沒有遵循規範怎麼辦？

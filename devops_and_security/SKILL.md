@@ -1,4 +1,5 @@
 ---
+id: devops_and_security
 name: DevOps and Security
 description: CI/CD 自動化、Gradle 優化與應用程式安全加固
 ---

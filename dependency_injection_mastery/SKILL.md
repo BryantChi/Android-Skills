@@ -1,4 +1,5 @@
 ---
+id: dependency_injection_mastery
 name: Dependency Injection Mastery
 description: Hilt 進階用法、Custom Components 與 Multi-binding 模式
 ---

@@ -1,4 +1,5 @@
 ---
+id: kotlin_multiplatform
 name: Kotlin Multiplatform
 description: KMP 跨平台架構、共享邏輯與平台整合
 ---

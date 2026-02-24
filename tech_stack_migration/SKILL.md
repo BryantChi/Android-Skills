@@ -1,4 +1,5 @@
 ---
+id: tech_stack_migration
 name: Tech Stack Migration
 description: View→Compose, RxJava→Flow 等技術遷移指南
 ---

@@ -1,4 +1,5 @@
 ---
+id: deep_performance_tuning
 name: Deep Performance Tuning
 description: Systrace, Memory Analysis, R8 優化與 App Startup 調校
 ---

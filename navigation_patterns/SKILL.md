@@ -1,4 +1,5 @@
 ---
+id: navigation_patterns
 name: Navigation Patterns
 description: Deep Links、跨模組導航與複雜 Back Stack 管理
 ---
