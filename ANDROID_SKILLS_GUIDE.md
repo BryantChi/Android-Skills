@@ -1,6 +1,21 @@
 # Android Skills 完整使用教學
 
-這份指南詳細說明如何在各種 AI 工具中使用這 16 個 Android 技能。
+這份指南詳細說明如何在各種 AI 工具中使用這 17 個 Android 技能（+ 1 個 `android_skill_index` 導航 = 18 個資料夾）。
+
+## 🆕 Latest Updates（2026-04）
+
+本套 skill 在 2026-04 進行重構：
+
+| 變更 | 從 | 到 |
+|------|----|----|
+| 改名 + 重新定位 | `observability_first` | `observability_strategy`（指標設計層） |
+| 改名 + 收斂職責 | `devops_and_security` | `release_automation`（移出 Secrets/Signing） |
+| 強化 + 接收 Secrets | `supply_chain_security` | `supply_chain_security`（內容擴張至 ~250 行） |
+| 新增 | — | `platform_modernization_2026`（年度更新，KSP2 / Gradle 9 / AGP 8.7+ / targetSdk 35） |
+
+外部引用更新：把舊的 `@observability_first` / `@devops_and_security` 改為新名。
+
+版本基準：Kotlin 2.1.x / Gradle 9.0+ / AGP 8.7+ / compileSdk 35 / Compose BOM 2025.04 / Hilt 2.52 / Navigation 3.x。
 
 ---
 
@@ -40,21 +55,24 @@
 | # | Skill 名稱 | 用途簡述 | 檔案路徑 |
 |---|-----------|---------|---------|
 | 1 | `android_skill_index` | 技能導航中心 | `android_skill_index/SKILL.md` |
-| 2 | `coding_style_conventions` | 代碼規範、Detekt/Ktlint | `coding_style_conventions/SKILL.md` |
-| 3 | `project_bootstrapping` | 專案快速建置、Convention Plugins | `project_bootstrapping/SKILL.md` |
-| 4 | `ui_ux_engineering` | Design System、Accessibility | `ui_ux_engineering/SKILL.md` |
-| 5 | `dependency_injection_mastery` | Hilt 進階、Multibinding | `dependency_injection_mastery/SKILL.md` |
-| 6 | `data_layer_mastery` | Room、Retrofit、Offline-First | `data_layer_mastery/SKILL.md` |
-| 7 | `navigation_patterns` | Deep Links、跨模組導航 | `navigation_patterns/SKILL.md` |
-| 8 | `legacy_rapid_expansion` | 舊專案快速擴充、Islanding | `legacy_rapid_expansion/SKILL.md` |
-| 9 | `tech_stack_migration` | Rx→Flow、View→Compose | `tech_stack_migration/SKILL.md` |
-| 10 | `testing_legacy_strategies` | 遺留代碼測試策略 | `testing_legacy_strategies/SKILL.md` |
-| 11 | `deep_performance_tuning` | 效能深度優化 | `deep_performance_tuning/SKILL.md` |
-| 12 | `devops_and_security` | CI/CD、安全加固 | `devops_and_security/SKILL.md` |
-| 13 | `crash_monitoring` | Crashlytics、ANR 分析 | `crash_monitoring/SKILL.md` |
-| 14 | `kotlin_multiplatform` | KMP 跨平台架構 | `kotlin_multiplatform/SKILL.md` |
-| 15 | `observability_first` | 可觀測性優先與指標閉環 | `observability_first/SKILL.md` |
-| 16 | `supply_chain_security` | 依賴治理與供應鏈安全 | `supply_chain_security/SKILL.md` |
+| 2 | `platform_modernization_2026` ⏰ | 年度平台升級（KSP2 / Gradle 9 / AGP 8.7+ / targetSdk 35 / Edge-to-Edge / Predictive Back） | `platform_modernization_2026/SKILL.md` |
+| 3 | `coding_style_conventions` | 代碼規範、Detekt 1.25+ / Ktlint 1.4+ / Compose Stability | `coding_style_conventions/SKILL.md` |
+| 4 | `project_bootstrapping` | 專案快速建置、Convention Plugins、Version Catalog | `project_bootstrapping/SKILL.md` |
+| 5 | `ui_ux_engineering` | Material 3 Expressive、Edge-to-Edge、Adaptive、a11y | `ui_ux_engineering/SKILL.md` |
+| 6 | `dependency_injection_mastery` | Hilt 2.52+、Custom Components、Multibinding、KSP2 | `dependency_injection_mastery/SKILL.md` |
+| 7 | `data_layer_mastery` | Room 2.7+、Retrofit、Offline-First、Sync Manager、Proto DataStore | `data_layer_mastery/SKILL.md` |
+| 8 | `navigation_patterns` | Compose Navigation 3.x、Deep Links、Predictive Back | `navigation_patterns/SKILL.md` |
+| 9 | `legacy_rapid_expansion` | 舊專案快速擴充、Islanding | `legacy_rapid_expansion/SKILL.md` |
+| 10 | `tech_stack_migration` | View→Compose、Rx→Flow、Dagger→Hilt、kapt→KSP2（**唯一權威**） | `tech_stack_migration/SKILL.md` |
+| 11 | `testing_legacy_strategies` | Characterization、Robolectric、Roborazzi、Compose Preview Screenshot | `testing_legacy_strategies/SKILL.md` |
+| 12 | `deep_performance_tuning` | Macrobenchmark、Baseline/Startup Profiles、Perfetto、JankStats、R8 | `deep_performance_tuning/SKILL.md` |
+| 13 | `release_automation` | CI Quality Gates、Configuration Cache 9、Fastlane、Play Integrity、Cert Pinning | `release_automation/SKILL.md` |
+| 14 | `crash_monitoring` | Firebase Crashlytics 33.x、ANR Watchdog、Timber、Play Console 警報聯動 | `crash_monitoring/SKILL.md` |
+| 15 | `kotlin_multiplatform` | KMP 2.1、Ktor 3.x、SQLDelight 2.x、iOS Interop、CMP 決策 | `kotlin_multiplatform/SKILL.md` |
+| 16 | `observability_strategy` | SLI/SLO 設計、告警閾值矩陣、event schema、feedback loop（設計層） | `observability_strategy/SKILL.md` |
+| 17 | `supply_chain_security` | OSV-Scanner、SBOM、SLSA、Sigstore、Signing & Secrets、License | `supply_chain_security/SKILL.md` |
+
+⏰ 標示為「年度更新」skill；2027-04 前需重新審視。
 
 ---
 
@@ -63,7 +81,7 @@
 ### 原則 1：Context 管理 (不浪費 Token)
 
 ```
-❌ 錯誤做法：把 16 個檔案全部丟給 AI
+❌ 錯誤做法：把 17 個檔案全部丟給 AI
    → Token 浪費、AI 注意力分散、回應品質下降
 
 ✅ 正確做法：根據任務只載入 2-3 個相關技能
@@ -77,17 +95,20 @@
 | 場景 | 描述 | 建議載入的技能 |
 |------|------|--------------|
 | A | 從零建立新專案 | `project_bootstrapping` + `coding_style_conventions` + `ui_ux_engineering` |
-| B | 舊專案加新功能 | `legacy_rapid_expansion` + `navigation_patterns` |
-| C | 舊專案全面現代化 | `testing_legacy_strategies` + `tech_stack_migration` |
-| D | 效能問題排查 | `deep_performance_tuning` + `crash_monitoring` |
-| E | App 發布準備 | `devops_and_security` + `deep_performance_tuning` |
-| F | 跨平台共享邏輯 | `kotlin_multiplatform` + `data_layer_mastery` |
-| G | AI-assisted CI / Quality Gates | `coding_style_conventions` + `devops_and_security` |
-| H | Performance-by-default | `deep_performance_tuning` + `project_bootstrapping` |
-| I | Observability-first | `observability_first` + `crash_monitoring` |
-| J | Supply Chain Security | `supply_chain_security` + `devops_and_security` |
-| K | Compose-first + Interop | `tech_stack_migration` + `ui_ux_engineering` |
-| L | 多模組治理 | `project_bootstrapping` + `dependency_injection_mastery` |
+| B | 舊專案加新功能 | `legacy_rapid_expansion` + `navigation_patterns` + `ui_ux_engineering` |
+| C | 舊專案全面現代化 | `testing_legacy_strategies` + `tech_stack_migration` + `dependency_injection_mastery` |
+| D | 效能問題排查 | `observability_strategy` + `deep_performance_tuning` + `crash_monitoring` |
+| E | App 發布準備 | `release_automation` + `supply_chain_security` + `deep_performance_tuning` + `crash_monitoring` |
+| F | 跨平台共享邏輯 | `kotlin_multiplatform` + `data_layer_mastery` + `dependency_injection_mastery` |
+| G | AI-assisted CI / Quality Gates | `coding_style_conventions` + `release_automation` + `testing_legacy_strategies` |
+| H | Performance-by-default | `deep_performance_tuning` + `project_bootstrapping` + `release_automation` |
+| I | Observability-first | `observability_strategy` + `crash_monitoring` + `deep_performance_tuning` |
+| J | Supply Chain Security | `supply_chain_security` + `release_automation` |
+| K | Compose-first + Interop | `tech_stack_migration` + `ui_ux_engineering` + `legacy_rapid_expansion` |
+| L | 多模組治理 | `project_bootstrapping` + `dependency_injection_mastery` + `navigation_patterns` |
+| **M** | **版本/平台升級**（新） | `platform_modernization_2026` + `project_bootstrapping` + `tech_stack_migration` |
+| **N** | **供應鏈合規**（新） | `supply_chain_security` + `release_automation` |
+| **O** | **可觀測性建模**（新） | `observability_strategy` + `crash_monitoring` + `deep_performance_tuning` |
 
 ### 原則 3：明確引用章節
 
@@ -136,7 +157,7 @@ npm install -g @anthropic-ai/antigravity
 ├── android_skill_index/SKILL.md
 ├── coding_style_conventions/SKILL.md
 ├── project_bootstrapping/SKILL.md
-└── ... (共 16 個)
+└── ... (共 17 個)
 ```
 
 #### 使用方式 1：自動識別
@@ -384,7 +405,7 @@ VS Code 擴充套件 ID：`RooVeterinaryInc.roo-cline`（官方名稱為 Roo Cod
 # 開啟 Roo Code Panel (Ctrl + Shift + P > Roo Code)
 
 # 引用技能
-請參考 @~/.gemini/antigravity/skills/coding_style_conventions/SKILL.md
+請參考 @coding_style_conventions
 
 幫我重構這個檔案
 ```
@@ -647,7 +668,7 @@ Anthropic 官方的 Agentic CLI 工具，支援 Skills 系統。
 │   └── SKILL.md
 ├── data_layer_mastery/
 │   └── SKILL.md
-└── ... (共 16 個 Android skills)
+└── ... (共 17 個 Android skills)
 ```
 
 #### 使用方式 1：Slash Command（直接呼叫）
@@ -1059,7 +1080,7 @@ brew install --cask codex
 │   └── SKILL.md
 ├── data_layer_mastery/
 │   └── SKILL.md
-└── ... (共 16 個 Android skills)
+└── ... (共 17 個 Android skills)
 ```
 
 #### 啟用 Skills 功能
@@ -1138,7 +1159,7 @@ sudo port install gemini-cli
 │   └── SKILL.md
 ├── data_layer_mastery/
 │   └── SKILL.md
-└── ... (共 14 個 Android skills)
+└── ... (共 17 個 Android skills)
 ```
 
 #### 啟用 Agent Skills（首次需要）
@@ -1384,7 +1405,7 @@ OpenCode 的強項在於先規劃再執行：
 #### 最佳實踐
 
 1. **利用 AGENTS.md**：可以在專案內定義專屬 Agent，預載入常用 Skills。
-2. **本地模型整合**：配合 @devops_and_security 中的隱私規範，可完全使用本地模型以避免敏感資料外洩。
+2. **本地模型整合**：配合 @release_automation 中的隱私規範，可完全使用本地模型以避免敏感資料外洩。
 
 ---
 
@@ -1497,7 +1518,7 @@ aider --model claude-3-5-sonnet-20241022 \
 # Step 1: 啟動並載入技能
 aider --model claude-3-5-sonnet-20241022 \
   --read ~/.gemini/antigravity/skills/coding_style_conventions/SKILL.md \
-  --read ~/.gemini/antigravity/skills/devops_and_security/SKILL.md \
+  --read ~/.gemini/antigravity/skills/release_automation/SKILL.md \
   --read ~/.gemini/antigravity/skills/testing_legacy_strategies/SKILL.md
 
 # Step 2: 建立 CI Gate
@@ -1521,7 +1542,7 @@ Step 2: 新專案預設
 @project_bootstrapping 請將效能量測流程納入專案骨架
 
 Step 3: CI Gate
-@devops_and_security 將效能門檻納入 CI Gate
+@release_automation 將效能門檻納入 CI Gate
 ```
 
 ---
@@ -1532,7 +1553,7 @@ Step 3: CI Gate
 
 ```
 Step 1: 指標與事件
-@observability_first 請定義關鍵流程與事件欄位
+@observability_strategy 請定義關鍵流程與事件欄位
 
 Step 2: Crash/ANR
 @crash_monitoring 建立 Crashlytics 與 ANR 告警
@@ -1551,7 +1572,7 @@ Step 3: 效能指標
 # Step 1: 依賴治理
 aider --model claude-3-5-sonnet-20241022 \
   --read ~/.gemini/antigravity/skills/supply_chain_security/SKILL.md \
-  --read ~/.gemini/antigravity/skills/devops_and_security/SKILL.md
+  --read ~/.gemini/antigravity/skills/release_automation/SKILL.md
 
 # Step 2: SCA + Gate
 請建立依賴掃描與風險門檻，納入 CI

@@ -1,69 +1,94 @@
 ---
 id: dependency_injection_mastery
 name: Dependency Injection Mastery
-description: Hilt 進階用法、Custom Components 與 Multi-binding 模式
+description: Hilt 2.52+ 進階用法 — Assisted Injection、Custom Components/Scopes、Multi-binding、EntryPoint 跨模組安全、KSP2 取代 kapt、@UninstallModules 測試策略，產出可測試的多模組 DI 架構
+type: skill
 ---
 
-# Dependency Injection Mastery (依賴注入專精)
+# Dependency Injection Mastery
 
 ## Instructions
-- 確認問題屬於 DI 架構或 Scope 設計
-- 依照下方章節順序套用
-- 一次只調整一種注入模式或 module
-- 完成後對照 Quick Checklist
+
+當問題涉及 Hilt 進階模式、scope 設計、跨模組存取、測試替換時載入。Dagger 2 → Hilt 的「遷移步驟」由 `@tech_stack_migration` 為唯一權威來源，本 skill 不重複（去重）；本 skill 處理 Hilt 已就位後的進階使用。
 
 ## When to Use
+
 - Scenario A：新專案 DI 架構建立
-- Scenario C：舊專案現代化與模組拆分
-- Scenario F：KMP 共用模組的 DI 調整
+- Scenario C：舊專案模組拆分，Hilt 已存在
+- Scenario F：KMP 共用模組與 Android 端 DI 整合
+- 設計 User Session / Tenant Session 等 Custom Scope
+- 多模組間以 EntryPoint 安全存取服務
+- 用 Multi-binding 做 plugin 架構
+
+## When NOT to Use
+
+- Dagger 2 → Hilt 遷移步驟 → `@tech_stack_migration`
+- Hilt plugin 安裝、KSP 設定（Convention Plugin）→ `@project_bootstrapping`
+- 平台升級造成的 KSP 版本問題 → `@platform_modernization_2026`
 
 ## Example Prompts
-- "請參考 Assisted Injection，替 ViewModel 加入動態參數"
-- "依照 Custom Hilt Components 建立 User Session Scope"
-- "請用 Multi-binding 章節設計插件式支付模組"
+
+- 「ViewModel 要吃導航參數又要用 Hilt，怎麼接 Assisted？」
+- 「想做 User Session Scope，登入後的服務都該綁這個 scope」
+- 「多種支付方式想用 plugin 架構，Multi-binding 怎麼設計？」
+- 「跨 module 想取得 feature 的服務，又不想直接 import，EntryPoint 怎麼用？」
+- 「unit test 想 fake repository，`@TestInstallIn` 怎麼配？」
 
 ## Workflow
-1. 先確認 Assisted Injection 與 Scope 需求
-2. 再整理 Module Organization 與 Qualifier
-3. 最後用 Quick Checklist 驗收
 
-## Practical Notes (2026)
-- 多模組採 API/impl 分離，避免跨模組直接依賴實作
-- 跨模組導航與 Service 以 interface + EntryPoint 統一
-- Scope 設計先畫出生命週期，再落地到 Module
+1. **盤生命週期**：列出實際 scope（App / User / Activity / Screen），對應到 Hilt 內建 component 或 Custom Component。
+2. **設計 Module 邊界**：依模組（network / database / repository / usecase）分檔，避免一檔過大。
+3. **Qualifier**：相同型別不同實例（IO/Default/Main dispatcher、Auth/NoAuth client）用 qualifier 區分。
+4. **跨模組存取**：用 `@EntryPoint` 而非全域 singleton；遠離 `applicationContext.applicationContext as App`。
+5. **測試**：`@TestInstallIn(replaces = [RealModule::class])` + `HiltAndroidRule`，可重組整個 graph。
+
+## Practical Notes (2026-04)
+
+| 項目 | 推薦做法 |
+|------|----------|
+| 編譯器 | KSP 2.x（**不用 kapt**） |
+| Hilt 版本 | 2.52+ |
+| Compose ViewModel | `hiltViewModel<VM, Factory> { factory.create(...) }` |
+| Worker | `@HiltWorker` + `HiltWorkerFactory` |
+| 第三方無法注入 | `@EntryPoint` from non-Hilt class |
+| 測試替換 | `@TestInstallIn(replaces = [...])` |
+| Scope 過度設計風險 | **能用 `@Singleton` 解決就不要建 Custom Component** |
 
 ## Minimal Template
+
 ```
-目標: 
-Scope: 
-Module 結構: 
-注入模式: 
+目標: <例：登入後的服務綁 User Session>
+Scope 對應:
+  - SingletonComponent: Network, Database, Analytics
+  - ActivityRetainedComponent: NavigationRouter
+  - ViewModelComponent: 表單 state holder
+  - UserSessionComponent (custom): UserPreferences, FeatureFlags
+Module 結構:
+  - core:network/di/NetworkModule
+  - core:database/di/DatabaseModule
+  - feature:checkout/di/CheckoutBindModule
+Qualifier: @IoDispatcher, @AuthenticatedClient
+測試替換: @TestInstallIn 在 androidTest/
 驗收: Quick Checklist
 ```
 
----
-
 ## Assisted Injection
 
-當 ViewModel 或 Worker 需要同時接收 DI 的依賴與 Runtime 參數時使用。
-
-### ViewModel with SavedStateHandle + Custom Args
+### Compose ViewModel 接導航參數
 
 ```kotlin
 @HiltViewModel(assistedFactory = DetailViewModel.Factory::class)
 class DetailViewModel @AssistedInject constructor(
     @Assisted private val productId: String,
     @Assisted savedStateHandle: SavedStateHandle,
-    private val repository: ProductRepository
+    private val repository: ProductRepository,
 ) : ViewModel() {
-    
     @AssistedFactory
     interface Factory {
         fun create(productId: String, savedStateHandle: SavedStateHandle): DetailViewModel
     }
 }
 
-// 在 Compose 中使用
 @Composable
 fun DetailScreen(productId: String) {
     val viewModel = hiltViewModel<DetailViewModel, DetailViewModel.Factory> { factory ->
@@ -72,30 +97,33 @@ fun DetailScreen(productId: String) {
 }
 ```
 
-### WorkManager with Assisted Injection
+### WorkManager
 
 ```kotlin
 @HiltWorker
 class SyncWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted params: WorkerParameters,
-    private val repository: Repository
+    private val repository: Repository,
 ) : CoroutineWorker(context, params) {
-    
-    override suspend fun doWork(): Result {
-        repository.sync()
-        return Result.success()
-    }
+    override suspend fun doWork(): Result = runCatching { repository.sync() }
+        .map { Result.success() }
+        .getOrElse { Result.retry() }
 }
 ```
 
----
+## Custom Hilt Components — 決策矩陣
 
-## Custom Hilt Components (Scopes)
+| 情境 | 建議 |
+|------|------|
+| 同 App 全程都需要的服務 | `@Singleton` 即可 |
+| 跨多個 Activity，但 Activity 重建不重生 | `@ActivityRetainedScoped` |
+| 單一 Activity / Fragment / ViewModel 範圍 | 內建對應 scope |
+| 登入後才存在、登出時應釋放的服務 | **Custom Component（推薦）** |
+| 多租戶 app 切換 tenant 時釋放 | **Custom Component** |
+| 「我覺得這樣比較乾淨」但無生命週期理由 | ❌ 不要做 |
 
-建立自定義的生命週期範圍，例如 User Session。
-
-### 定義 Custom Scope
+### User Session 範例
 
 ```kotlin
 @Scope
@@ -111,133 +139,194 @@ interface UserSessionComponentBuilder {
     fun setUser(@BindsInstance user: User): UserSessionComponentBuilder
     fun build(): UserSessionComponent
 }
-```
 
-### 管理 Component 生命週期
+@EntryPoint
+@InstallIn(UserSessionComponent::class)
+interface UserSessionEntryPoint {
+    fun userPreferences(): UserPreferences
+    fun featureFlagSource(): FeatureFlagSource
+}
 
-```kotlin
 @Singleton
 class UserSessionManager @Inject constructor(
-    private val componentBuilder: Provider<UserSessionComponentBuilder>
+    private val componentBuilder: Provider<UserSessionComponentBuilder>,
 ) {
     private var component: UserSessionComponent? = null
-    
+
     fun login(user: User) {
         component = componentBuilder.get().setUser(user).build()
     }
-    
+
     fun logout() {
         component = null
     }
-    
-    fun <T> getService(clazz: Class<T>): T {
-        return EntryPoints.get(component!!, UserSessionEntryPoint::class.java)
-            .let { /* get service */ }
+
+    inline fun <reified T> entryPoint(extract: UserSessionEntryPoint.() -> T): T {
+        val c = checkNotNull(component) { "Not logged in" }
+        return EntryPoints.get(c, UserSessionEntryPoint::class.java).extract()
     }
 }
 ```
 
----
+## Multi-binding（Plugin 架構）
 
-## Multi-binding (Set & Map)
-
-實作 Plugin 架構，例如多種支付方式。
-
-### Set Multibinding
+### Set
 
 ```kotlin
-interface PaymentProcessor {
-    fun process(amount: Double): Result
-}
+interface PaymentProcessor { fun supports(type: String): Boolean; fun process(amount: Long): Result<Unit> }
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class PaymentModule {
-    
-    @Binds
-    @IntoSet
-    abstract fun bindCreditCard(impl: CreditCardProcessor): PaymentProcessor
-    
-    @Binds
-    @IntoSet
-    abstract fun bindPayPal(impl: PayPalProcessor): PaymentProcessor
+abstract class PaymentBindingModule {
+    @Binds @IntoSet abstract fun creditCard(impl: CreditCardProcessor): PaymentProcessor
+    @Binds @IntoSet abstract fun paypal(impl: PayPalProcessor): PaymentProcessor
 }
 
-// 注入所有實作
 class PaymentService @Inject constructor(
-    private val processors: Set<@JvmSuppressWildcards PaymentProcessor>
+    private val processors: Set<@JvmSuppressWildcards PaymentProcessor>,
 ) {
-    fun processAll(amount: Double) {
-        processors.forEach { it.process(amount) }
-    }
+    fun process(type: String, amount: Long): Result<Unit> =
+        processors.first { it.supports(type) }.process(amount)
 }
 ```
 
-### Map Multibinding (with Key)
+### Map（按 key 取）
 
 ```kotlin
-enum class PaymentType { CREDIT_CARD, PAYPAL, GOOGLE_PAY }
-
-@MapKey
-annotation class PaymentTypeKey(val value: PaymentType)
+@MapKey annotation class PaymentTypeKey(val value: PaymentType)
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class PaymentModule {
-    
-    @Binds
-    @IntoMap
-    @PaymentTypeKey(PaymentType.CREDIT_CARD)
+abstract class PaymentMapModule {
+    @Binds @IntoMap @PaymentTypeKey(PaymentType.CREDIT_CARD)
     abstract fun bindCreditCard(impl: CreditCardProcessor): PaymentProcessor
 }
 
-// 按 Key 取得特定實作
 class PaymentService @Inject constructor(
-    private val processors: Map<PaymentType, @JvmSuppressWildcards PaymentProcessor>
+    private val processors: Map<PaymentType, @JvmSuppressWildcards Provider<PaymentProcessor>>,
 ) {
-    fun process(type: PaymentType, amount: Double) {
-        processors[type]?.process(amount)
+    // Provider 延遲建構，未使用的 processor 不會被生成
+    fun process(type: PaymentType, amount: Long) = processors.getValue(type).get().process(amount)
+}
+```
+
+## EntryPoint：跨模組安全存取
+
+當 `feature:a` 想用 `feature:b` 的服務，**不要直接 import**。改放在 `core:domain` 介面 + `feature:b` 實作 + `feature:a` 透過 EntryPoint 取。
+
+```kotlin
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface AnalyticsEntryPoint {
+    fun analytics(): Analytics
+}
+
+// 非 Hilt class（如某 Util object 或第三方 callback）需要服務時
+class LegacyCallback(private val context: Context) {
+    private val analytics by lazy {
+        EntryPointAccessors
+            .fromApplication(context, AnalyticsEntryPoint::class.java)
+            .analytics()
     }
 }
 ```
 
----
-
-## Module Organization
-
-### 分層架構
-
-```
-di/
-├── AppModule.kt           # Application-level
-├── NetworkModule.kt       # Retrofit, OkHttp
-├── DatabaseModule.kt      # Room
-├── RepositoryModule.kt    # Repository bindings
-└── UseCaseModule.kt       # UseCase bindings
-```
-
-### Qualifier 使用
+## Qualifier 與 Dispatcher 注入
 
 ```kotlin
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class IoDispatcher
+@Qualifier @Retention(AnnotationRetention.BINARY) annotation class IoDispatcher
+@Qualifier @Retention(AnnotationRetention.BINARY) annotation class DefaultDispatcher
+@Qualifier @Retention(AnnotationRetention.BINARY) annotation class MainDispatcher
 
 @Module
 @InstallIn(SingletonComponent::class)
 object DispatcherModule {
-    @Provides
-    @IoDispatcher
-    fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
+    @Provides @IoDispatcher fun io(): CoroutineDispatcher = Dispatchers.IO
+    @Provides @DefaultDispatcher fun default(): CoroutineDispatcher = Dispatchers.Default
+    @Provides @MainDispatcher fun main(): CoroutineDispatcher = Dispatchers.Main.immediate
 }
 ```
 
----
+注入：
+
+```kotlin
+class Repository @Inject constructor(
+    @IoDispatcher private val io: CoroutineDispatcher,
+    private val api: Api,
+) {
+    suspend fun load() = withContext(io) { api.fetch() }
+}
+```
+
+## 測試替換策略（@TestInstallIn / @UninstallModules）
+
+```kotlin
+// androidTest/.../FakeRepositoryModule.kt
+@Module
+@TestInstallIn(
+    components = [SingletonComponent::class],
+    replaces = [RepositoryModule::class],
+)
+abstract class FakeRepositoryModule {
+    @Binds abstract fun fake(impl: FakeUserRepository): UserRepository
+}
+
+@HiltAndroidTest
+class LoginScreenTest {
+    @get:Rule val hiltRule = HiltAndroidRule(this)
+    @Inject lateinit var repository: UserRepository
+
+    @Before fun setup() = hiltRule.inject()
+}
+```
+
+單一測試需更精細替換時用 `@UninstallModules(RealModule::class)` + `@BindValue`：
+
+```kotlin
+@UninstallModules(RepositoryModule::class)
+@HiltAndroidTest
+class CheckoutFlowTest {
+    @BindValue val userRepository: UserRepository = mockk(relaxed = true)
+}
+```
+
+## Module Organization（多模組）
+
+```
+core/network/di/NetworkModule.kt           # OkHttp, Retrofit base
+core/network/di/AuthInterceptorModule.kt
+core/database/di/DatabaseModule.kt          # Room
+core/data/di/RepositoryModule.kt            # Binds Repository impls
+core/domain/di/UseCaseModule.kt             # 通常不需要，UseCase 用 constructor inject
+feature/checkout/di/CheckoutModule.kt       # feature-local providers
+app/di/AppModule.kt                         # Application-level
+```
+
+**API/Impl 分離**：
+
+```
+core:network:api    -> 介面與 DTO
+core:network:impl   -> Retrofit 實作 + Hilt module（@InstallIn(SingletonComponent::class)）
+feature:* 只 implementation core:network:api
+app implementation core:network:impl
+```
+
+## Cross-Skill References
+
+- `@tech_stack_migration`：**Dagger 2 → Hilt 遷移的唯一權威**。本 skill 不重複，遇到遷移問題請載入它。
+- `@project_bootstrapping`：Convention Plugin 套 Hilt + KSP；本 skill 是 Hilt 已就位後的進階。
+- `@platform_modernization_2026`：KSP 版本與 Kotlin 版本的對齊。
+- `@kotlin_multiplatform`：KMP 端 commonMain 的 expect/actual + 平台 DI 接合。
+- `@testing_legacy_strategies`：Hilt test rule 在舊代碼覆寫的策略。
 
 ## Quick Checklist
 
-- [ ] ViewModel 動態參數使用 Assisted Injection
-- [ ] 避免在 Module 中使用 `@Provides` 建立複雜邏輯
-- [ ] Qualifier 用於區分相同類型的不同實例
-- [ ] 避免 Circular Dependencies
-- [ ] 測試時使用 `@UninstallModules` + `@TestInstallIn`
+- [ ] kapt 完全移除，全用 KSP 2.x
+- [ ] ViewModel 動態參數一律用 `@AssistedInject` + `hiltViewModel<VM, Factory>`
+- [ ] Custom Component 僅在「真有獨立生命週期」時建立，並有對應的 lifecycle owner
+- [ ] 跨模組存取走 `@EntryPoint` 或 `core` 介面，禁止直接 import 對方 impl
+- [ ] Qualifier 區分同型別不同實例
+- [ ] Dispatcher 一律用 `@IoDispatcher` 等 qualifier 注入，不直接寫 `Dispatchers.IO`
+- [ ] 測試用 `@TestInstallIn` 替換整個 module；單一 case 用 `@UninstallModules` + `@BindValue`
+- [ ] 無 circular dependency；用 `Lazy<T>` 或 `Provider<T>` 打破
+- [ ] Multi-binding 使用 `Provider<T>` 避免不必要的初始化

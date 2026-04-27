@@ -1,235 +1,374 @@
 ---
 id: crash_monitoring
 name: Crash Monitoring
-description: Crashlytics 設定、ANR 分析與結構化日誌
+description: Android Crash/ANR/結構化日誌的「實作層」 — Firebase Crashlytics 33.x、Custom Signals/OnFatalException、Android 14 ANR Watchdog（含 foreground threshold）、Memory Warning、Timber、Play Console + Firebase 警報聯動，產出可定位的事件流
+type: skill
 ---
 
-# Crash Monitoring (當機監控)
+# Crash Monitoring
 
 ## Instructions
-- 確認需求屬於當機/ANR/日誌監控
-- 依照下方章節順序套用
-- 一次只調整一種監控或警報設定
-- 完成後對照 Quick Checklist
+
+當問題涉及 Crashlytics 設定、ANR 捕捉、結構化日誌、警報聯動的「實作」時載入。指標策略、SLO、告警門檻設計請載入 `@observability_strategy`，本 skill 只負責「怎麼裝、怎麼接、怎麼讓 dashboard 收到」。
 
 ## When to Use
+
 - Scenario D：效能問題排查
 - Scenario E：發布前監控準備
+- 套用 Crashlytics Custom Signals 與 OnFatalException 新 API
+- ANR Watchdog 升級對應 Android 14+ foreground 閾值變更
+- Memory Warning / Background Crash 等冷門信號
+- Play Console + Firebase 雙向警報聯動
+
+## When NOT to Use
+
+- SLO 設計、告警閾值矩陣、event schema 設計 → `@observability_strategy`
+- 效能根因（Macrobenchmark / Perfetto） → `@deep_performance_tuning`
+- CI rollout 自動 halt → `@release_automation`
+- App 內加密/防竄改信號 → `@release_automation`
 
 ## Example Prompts
-- "請依照 Firebase Crashlytics Setup，完成 Crashlytics 整合"
-- "用 ANR Analysis 章節加入 StrictMode 與 ANR Watchdog"
-- "請依 Structured Logging 章節統一日誌格式"
+
+- 「Crashlytics 33 怎麼裝？BuildConfig 與 mapping.txt 上傳要怎麼設？」
+- 「想接 Crashlytics Custom Signals 紀錄 build variant 與 user tier」
+- 「Android 14 之後 ANR Watchdog 的 foreground threshold 改了，要怎麼處理？」
+- 「Memory Warning 信號怎麼接、要不要當 non-fatal 上報？」
+- 「Play Console 看到 ANR 暴增但 Firebase 沒警報，怎麼聯動？」
 
 ## Workflow
-1. 先完成 Crashlytics 基本設定與 Custom Keys
-2. 再加入 ANR 與 Structured Logging
-3. 最後用 Dashboard & Alerting 與 Quick Checklist 驗收
 
-## Practical Notes (2026)
-- Release 前先確立 Crash/ANR 的告警門檻
-- 重要流程必有結構化事件與關鍵鍵值
-- Non-Fatal 記錄以高價值事件為主
+1. **SDK 安裝**：BOM 33.x、`firebase.crashlytics` plugin、native symbols（NDK）。
+2. **Mapping & Symbols**：CI 自動上傳 R8 mapping.txt 與 NDK 符號表。
+3. **User & Custom Keys**：登入後 `setUserId(hash)`；常駐 Custom Keys（tier、locale、ab buckets）。
+4. **ANR / Memory / Background** 三類冷門信號接 watchdog。
+5. **Timber tree** 統一 log 並橋到 Crashlytics non-fatal。
+6. **Velocity / Custom alerts** 在 Firebase Console + Play Console 雙設定，互校。
+
+## Practical Notes (2026-04)
+
+| 元件 | 版本 | 備註 |
+|------|------|------|
+| Firebase BOM | 33.x | Crashlytics 19+, Analytics 22+ |
+| Crashlytics Plugin | 3.0+ | 含 `OnFatalException` API |
+| Custom Signals | 33.x | 取代部分 Custom Keys 用法 |
+| ANR Watchdog（自寫） | — | Android 14+ foreground 5s、background 10s |
+| Timber | 5.x | Kotlin extensions |
+| Play Console Vitals | 持續更新 | 為 ANR rate 真相之源（24-48h 延遲） |
 
 ## Minimal Template
+
 ```
-目標: 
-監控範圍: 
-告警門檻: 
-事件欄位: 
+SDK: Firebase BOM 33.x + Crashlytics 19.x + NDK symbols
+User scope: setUserId(SHA-256(uid)), 不存原值
+Custom Signals: build, build_type, locale, user_tier, ab_buckets
+ANR Watchdog: 5s foreground / 10s background
+Memory: ComponentCallbacks2 + onLowMemory upload
+Logger: Timber + CrashlyticsTree (INFO+ → log; WARN+ → non-fatal)
+Alerts: Crashlytics velocity 0.5% + Play Console threshold + Slack hook
 驗收: Quick Checklist
 ```
 
----
-
-## Firebase Crashlytics Setup
-
-### 基本設定
+## Crashlytics 33.x 安裝
 
 ```kotlin
-// build.gradle.kts (app)
+// build.gradle.kts (root)
 plugins {
+    id("com.google.gms.google-services") version "4.4.2" apply false
+    id("com.google.firebase.crashlytics") version "3.0.2" apply false
+}
+
+// app/build.gradle.kts
+plugins {
+    id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
 }
 
-dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
-    implementation("com.google.firebase:firebase-crashlytics-ktx")
-    implementation("com.google.firebase:firebase-analytics-ktx")
-}
-```
-
-### Custom Keys
-
-```kotlin
-// 記錄使用者狀態
-Firebase.crashlytics.apply {
-    setUserId("user_123")
-    setCustomKey("subscription_tier", "premium")
-    setCustomKey("feature_flags", "new_checkout:true")
-}
-```
-
-### Non-Fatal Logging
-
-```kotlin
-// 記錄非致命錯誤
-try {
-    riskyOperation()
-} catch (e: Exception) {
-    Firebase.crashlytics.recordException(e)
-    // 繼續正常流程
-}
-
-// 帶上下文的 Non-Fatal
-Firebase.crashlytics.log("Starting payment flow")
-try {
-    processPayment()
-} catch (e: PaymentException) {
-    Firebase.crashlytics.apply {
-        setCustomKey("payment_amount", amount)
-        setCustomKey("payment_method", method)
-        recordException(e)
+android {
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+        }
     }
 }
+
+dependencies {
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-crashlytics-ndk")  // 若有 native
+    implementation("com.google.firebase:firebase-analytics")
+}
+
+// CI 上傳 mapping.txt 自動處理：crashlytics plugin 在 :app:assembleRelease 時上傳
+// NDK symbols：./gradlew :app:uploadCrashlyticsSymbolFileRelease
 ```
 
----
-
-## ANR Analysis
-
-### StrictMode (Debug)
+## Custom Keys / Custom Signals
 
 ```kotlin
-class MyApplication : Application() {
-    override fun onCreate() {
-        super.onCreate()
-        
-        if (BuildConfig.DEBUG) {
-            StrictMode.setThreadPolicy(
-                StrictMode.ThreadPolicy.Builder()
-                    .detectDiskReads()
-                    .detectDiskWrites()
-                    .detectNetwork()
-                    .penaltyLog()
-                    .penaltyDeath()  // 強制 Crash
-                    .build()
-            )
-            
-            StrictMode.setVmPolicy(
-                StrictMode.VmPolicy.Builder()
-                    .detectLeakedClosableObjects()
-                    .detectActivityLeaks()
-                    .penaltyLog()
-                    .build()
-            )
+class CrashlyticsUserScope @Inject constructor(
+    private val crashlytics: FirebaseCrashlytics,
+) {
+    fun bind(user: User?) {
+        if (user == null) {
+            crashlytics.setUserId("")
+            return
+        }
+        crashlytics.setUserId(user.id.sha256())   // 不存原值
+        crashlytics.setCustomKeys {
+            key("user_tier", user.tier.name)
+            key("locale", Locale.getDefault().toLanguageTag())
+            key("build", BuildConfig.VERSION_NAME)
+            key("build_type", BuildConfig.BUILD_TYPE)
         }
     }
 }
 ```
 
-### ANR Watchdog
+### Custom Signals（Crashlytics 33+）
 
 ```kotlin
-class ANRWatchDog(private val timeoutMs: Long = 5000) : Thread() {
-    
+// 替代部分 setCustomKey；Custom Signals 可在 Crashlytics 控制台快速 filter
+crashlytics.setCustomKeys {
+    key("ab_checkout_v3", "treatment")
+    key("network", connectivityType())
+}
+```
+
+### 流程上下文 log
+
+```kotlin
+crashlytics.log("checkout: payment_started method=$method amount=$amount")
+try {
+    processPayment()
+} catch (e: PaymentException) {
+    crashlytics.setCustomKeys {
+        key("payment_amount", amount.toLong())
+        key("payment_method", method.name)
+    }
+    crashlytics.recordException(e)
+}
+```
+
+## OnFatalException（Crashlytics 33 新 API）
+
+```kotlin
+class CrashlyticsBootstrap @Inject constructor(
+    private val crashlytics: FirebaseCrashlytics,
+    private val sessionEnder: SessionEnder,
+) {
+    fun start() {
+        crashlytics.setOnFatalCrashListener { event ->
+            // 在進程被終結前同步收尾：flush 重要 buffer、釋放 file lock
+            sessionEnder.flushSync()
+        }
+    }
+}
+```
+
+注意：listener 內 **只能做同步、不可 IO 阻塞長時間**；JVM 將立刻 die。
+
+## ANR Analysis
+
+### StrictMode（debug only）
+
+```kotlin
+class App : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        if (BuildConfig.DEBUG) installStrictMode()
+        installAnrWatchdog()
+        installMemoryCallback()
+    }
+}
+
+private fun installStrictMode() {
+    StrictMode.setThreadPolicy(
+        StrictMode.ThreadPolicy.Builder()
+            .detectDiskReads()
+            .detectDiskWrites()
+            .detectNetwork()
+            .penaltyLog()
+            .penaltyDeath()
+            .build()
+    )
+    StrictMode.setVmPolicy(
+        StrictMode.VmPolicy.Builder()
+            .detectLeakedClosableObjects()
+            .detectActivityLeaks()
+            .penaltyLog()
+            .build()
+    )
+}
+```
+
+### ANR Watchdog（Android 14+ foreground 5 秒閾值）
+
+```kotlin
+class AnrWatchdog(
+    private val foregroundTimeoutMs: Long = 5_000,
+    private val backgroundTimeoutMs: Long = 10_000,
+    private val onAnr: (StackTraceElement[]) -> Unit,
+) : Thread("anr-watchdog") {
     private val mainHandler = Handler(Looper.getMainLooper())
-    private var tick = 0
-    private var reported = false
-    
+    @Volatile private var tick = 0L
+    @Volatile private var inForeground = true
+
+    fun setForeground(value: Boolean) { inForeground = value }
+
     override fun run() {
         while (!isInterrupted) {
-            val currentTick = tick
+            val current = tick
             mainHandler.post { tick++ }
-            
-            Thread.sleep(timeoutMs)
-            
-            if (currentTick == tick && !reported) {
-                reported = true
-                val stackTraces = Looper.getMainLooper().thread.stackTrace
-                Firebase.crashlytics.log("ANR Detected")
-                Firebase.crashlytics.recordException(ANRException(stackTraces))
+            val sleep = if (inForeground) foregroundTimeoutMs else backgroundTimeoutMs
+            try { sleep(sleep) } catch (_: InterruptedException) { return }
+            if (current == tick) {
+                val stack = Looper.getMainLooper().thread.stackTrace
+                onAnr(stack)
+                // 等待恢復後再重置
+                while (current == tick && !isInterrupted) try { sleep(500) } catch (_: InterruptedException) { return }
             }
         }
     }
 }
+
+class AnrException(stack: Array<StackTraceElement>) : RuntimeException("ANR detected") {
+    init { stackTrace = stack }
+}
 ```
 
----
-
-## Structured Logging
-
-### Timber Setup
+接到 Application + ProcessLifecycleOwner：
 
 ```kotlin
-class MyApplication : Application() {
-    override fun onCreate() {
-        super.onCreate()
-        
-        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
-        } else {
-            Timber.plant(CrashlyticsTree())
+val watchdog = AnrWatchdog { stack ->
+    crashlytics.log("ANR detected")
+    crashlytics.recordException(AnrException(stack))
+}.apply { isDaemon = true; start() }
+
+ProcessLifecycleOwner.get().lifecycle.addObserver(object : DefaultLifecycleObserver {
+    override fun onStart(owner: LifecycleOwner) { watchdog.setForeground(true) }
+    override fun onStop(owner: LifecycleOwner) { watchdog.setForeground(false) }
+})
+```
+
+Android 14+ 系統 ANR 偵測 foreground 閾值由 5 秒改為以 input + broadcast 等為主；自家 watchdog 仍以 5s 為基準對齊使用者感受。
+
+## Memory Warning
+
+```kotlin
+class App : Application(), ComponentCallbacks2 {
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL) {
+            crashlytics.log("memory_critical level=$level rss=${getRssKb()}KB")
+            // 不上報為 non-fatal（量太大），改成事件
+            analytics.logEvent("memory_warning") {
+                param("level", level.toLong())
+                param("rss_kb", getRssKb())
+            }
         }
     }
 }
 
-class CrashlyticsTree : Timber.Tree() {
+private fun getRssKb(): Long =
+    runCatching { File("/proc/self/status").readLines().firstOrNull { it.startsWith("VmRSS:") }
+        ?.replace(Regex("\\D+"), "")?.toLongOrNull() }.getOrNull() ?: 0L
+```
+
+## Background Crash 加旗標
+
+背景啟動時 crash 與 foreground crash 的優先級不同；前景 crash 對體驗更敏感。
+
+```kotlin
+crashlytics.setCustomKeys {
+    key("app_state", if (ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) "foreground" else "background")
+}
+```
+
+## Structured Logging（Timber + CrashlyticsTree）
+
+```kotlin
+class App : Application() {
+    @Inject lateinit var crashlyticsTree: CrashlyticsTree
+    override fun onCreate() {
+        super.onCreate()
+        Timber.plant(if (BuildConfig.DEBUG) Timber.DebugTree() else crashlyticsTree)
+    }
+}
+
+class CrashlyticsTree @Inject constructor(
+    private val crashlytics: FirebaseCrashlytics,
+) : Timber.Tree() {
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-        if (priority >= Log.INFO) {
-            Firebase.crashlytics.log("[$tag] $message")
-        }
-        
-        t?.let {
-            Firebase.crashlytics.recordException(it)
+        if (priority < Log.INFO) return
+        crashlytics.log("[$tag] $message")
+        if (priority >= Log.WARN && t != null) {
+            crashlytics.recordException(t)
         }
     }
 }
 ```
 
-### Log Levels 使用規範
+| Level | 使用場景 |
+|-------|----------|
+| VERBOSE | API body / state machine trace（debug only） |
+| DEBUG | 開發除錯 |
+| INFO | 重要里程碑（login success / payment started） |
+| WARN | 潛在問題（retry / cache miss） |
+| ERROR | 可恢復錯誤（network timeout） |
 
-| Level | 使用場景 | 例子 |
-|-------|---------|------|
-| VERBOSE | Debug 專用細節 | API Response body |
-| DEBUG | 開發除錯 | ViewModel state changes |
-| INFO | 重要里程碑 | User login success |
-| WARN | 潛在問題 | Retry attempt |
-| ERROR | 可恢復錯誤 | Network timeout |
-
----
+避免在 `Timber.e()` 帶整個物件 `toString()`，太肥；只帶必要 key。
 
 ## Dashboard & Alerting
 
-### Crashlytics Velocity Alerts
+### Crashlytics Velocity Alert
 
+Firebase Console → Crashlytics → Settings → Velocity alerts：
+
+- Alert when crash rate > 0.5% over 1 hour（P0）
+- Alert when ANR rate > 0.5% over 6 hours（P1）
+
+### Crashlytics Issue Alert
+
+新 issue 出現 + impact > N users → Slack via webhook。
+
+### Play Console Vitals 雙保險
+
+```yaml
+# .github/workflows/play-vitals-watch.yml
+on: { schedule: [{ cron: '0 */2 * * *' }] }
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: google-github-actions/auth@v2
+      - run: |
+          rate=$(gcloud play androidpublisher v3 ... metrics anrRate)
+          if (( $(echo "$rate > 0.47" | bc -l) )); then
+            curl -X POST $SLACK_WEBHOOK -d '{"text":"Play Console ANR rate '$rate'% above Vitals良好門檻"}'
+          fi
 ```
-Firebase Console > Crashlytics > Settings
-- Enable velocity alerts
-- Set threshold: 1% of sessions
-```
 
-### Custom Metrics
+Play Console 有 24-48h 延遲，但分母真實；Firebase 即時但採樣可能不全。兩者比對發現偏差 → 檢查 SDK 初始化失敗或事件去重問題（→ `@observability_strategy`）。
 
-```kotlin
-// 追蹤關鍵指標
-Firebase.analytics.logEvent("checkout_started") {
-    param("cart_value", cartValue)
-}
+## Cross-Skill References
 
-Firebase.analytics.logEvent("checkout_completed") {
-    param("payment_method", method)
-    param("time_to_complete_ms", duration)
-}
-```
-
----
+- `@observability_strategy`：SLO 設計、告警閾值矩陣、event schema、feedback loop。本 skill 是其「實作層」。
+- `@deep_performance_tuning`：根因定位（Macrobenchmark / Perfetto）。
+- `@release_automation`：rollout 自動 halt、Play Console 操作；本 skill 提供觸發信號。
+- `@supply_chain_security`：mapping.txt 上傳鏈、簽章 token；本 skill 只用結果。
+- `@platform_modernization_2026`：Android 14/15 行為變更（ANR foreground threshold、ForegroundServiceTypeException）。
 
 ## Quick Checklist
 
-- [ ] Crashlytics 整合完成
-- [ ] Custom Keys 設定 (User tier, Feature flags)
-- [ ] Non-Fatal 記錄重要異常
-- [ ] StrictMode 在 Debug 啟用
-- [ ] Timber 統一日誌
-- [ ] Velocity Alerts 設定
+- [ ] Firebase BOM 33.x，Crashlytics + NDK symbols 安裝
+- [ ] R8 mapping.txt 與 NDK symbols 在 CI 自動上傳
+- [ ] `setUserId` 用 hash，不存原 PII
+- [ ] Custom Keys / Signals：build / tier / locale / ab_buckets 常駐
+- [ ] ANR Watchdog 含 foreground 5s / background 10s 閾值
+- [ ] StrictMode 僅 debug 開啟
+- [ ] Memory Warning 接 ComponentCallbacks2，rss 寫入事件
+- [ ] Background vs Foreground crash 區分（custom key `app_state`）
+- [ ] Timber + CrashlyticsTree：INFO 進 log，WARN+ 進 non-fatal
+- [ ] Velocity Alert 0.5% 設定 + Play Console Vitals 警報雙設定 + Slack hook
+- [ ] Play Console vs Crashlytics 數據定期對校（差異 > 10% 警示）
